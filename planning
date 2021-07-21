@@ -1,0 +1,96 @@
+~~~Battle Algorithm~~~
+3 cards, must be all from same house
+
+Players may select between 3 actions (triangle dis/advantage): React > Post > Lurk
+Whichever is selected, all the point totals of that active card will be added.
+
+Dis/Advantage ideas:
+-Points will be multiplied by 1.5x
+-Player w advantage rolls twice + takes higher and/or player w disadvantage rolls twice + takes lower
+-Player w advantage takes the higher die roll of the two
+
+Rolling/Random mechanic ideas:
+*Total points would range from 5 - 60
+*There should always be a chance of either side winning, no matter how minuscule (maybe)
+*Duels should be equally random, or at least less random, as duelists become higher levels
+-roll dX where X is (p1 total + p2 total)
+    *when values are very far apart, chance is very slanted, but always possible
+    *randomness stays the same as level becomes higher
+
+
+
+~~~Admin Commands~~~
+*AddFragment @user [card name/id] [amount]: Adds fragments to the user, only accepts positive values
+*RemoveFragment @user [card name/id] [amount]: Removes fragments to the user, only accepts positive values, checks to
+    make sure they have enough
+*SetLevel @user [card name/id] [level] : Accepts values between 0 and 7.  0 Erases their ownership of the card
+
+*CollectionSet[Set Name] : changes the set.  If the set name does not exist, user must press button to confirm creating
+    a new set.
+*CollectionAddUser @user [rarity] [post,lurk,react] "flavor" : Adds card to collection of current set, automatically
+    grabbing user's pfp.  Posts embed if successful.
+*CollectionAddCustom "name" [rarity] [post,lurk,react] "flavor" : message must be sent with an uploaded image.  Creates
+    and adds card to collection of current set.  Posts embed if successful.
+*CollectionRemove [card name/id] : Gives warning and asks for extra, secure confirmation.  Then goes and deletes card
+    from every players collection.
+
+*FreePull @user : gives them a free pack, what else
+
+*Stats : returns values of how many days with current set stats it would take to fully upgrade each rarity
+*StatsBoost [setName] [%] : Alters the % of pulls any given collection gets.  Can only boost 1 set at a time
+*StatsBoostReset : Resets collection boosts if possible
+*StatsSettings : Walks through menu allowing to change certain data
+    *Cards per pull (default = 3):
+    *Average days for Rare(default = 2):
+    *Average days for Legendary(default = 8):
+    *Then runs Stats of new settings
+
+
+
+~~~User Commands~~~
+*Pull(p) : checks if user has used their pull for the day, if not, briefly displays slot machine gif than delivers 3 cards
+TODO actually separate basic card images into fragments that get sent instead.  They only see part of the card.
+
+*Trade(t) @user : Post embed message to act as trade block.  Use (+/-)[card name/id] to add/remove items from the trade
+    block.  Both users must hit separate buttons to accept trade.  If any item is removed/added from trade block,
+    buttons reset color
+
+*Duel(d) @user : Post embed message that displays graphic and confirms duel.  Users must both hit separate buttons to
+    confirm.  Changes color when button is hit by user.
+
+*Activate(a) [card name/id, card name/id, card name/id] : Works for 1 - 3 cards, checks if they're all the same house
+
+*View(v) [card name/id] : Displays card image as embed.
+
+*Deck @user : Displays deck of player.  If no user is supplied, displays own deck
+    TODO: Figure out how~!
+        - No images, just scrollable text stats in chat
+        - Webapp that has every card, shows level or greyed out if unowned, displays number of shards beneath
+        - Most likely do first one short term then work on second
+
+*Private [true/false] : Determines whether deck may be viewed by other players or not.
+
+
+
+~~~Class Architecture~~~
+User
+- id
+- name
+- level (Some algorithm determines level based on their cards or something)
+- deck
+
+Card
+-id
+-name
+-post
+-react
+-lurk
+-level
+
+
+
+~~~DB Architecture~~~
+
+
+
+
