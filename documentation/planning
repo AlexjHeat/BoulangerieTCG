@@ -36,6 +36,11 @@ Rolling/Random mechanic ideas:
 
 *FreePull @user : gives them a free pack, what else
 
+*EditName
+*EditArt
+*EditFlavor
+*EditStats
+
 *Stats : returns values of how many days with current set stats it would take to fully upgrade each rarity
 *StatsBoost [setName] [%] : Alters the % of pulls any given collection gets.  Can only boost 1 set at a time
 *StatsBoostReset : Resets collection boosts if possible
@@ -60,7 +65,7 @@ TODO actually separate basic card images into fragments that get sent instead.  
 
 *Activate(a) [card name/id, card name/id, card name/id] : Works for 1 - 3 cards, checks if they're all the same house
 
-*View(v) [card name/id] : Displays card image as embed.
+*View(v) [card name/id] [level]: Displays card image as embed.
 
 *Deck @user : Displays deck of player.  If no user is supplied, displays own deck
     TODO: Figure out how~!
@@ -73,24 +78,27 @@ TODO actually separate basic card images into fragments that get sent instead.  
 
 
 ~~~Class Architecture~~~
-User
-- id
-- name
-- level (Some algorithm determines level based on their cards or something)
-- deck
+Duel class
+trade class
 
-Card
--id
--name
--post
--react
--lurk
--level
+error module (no class just functions)
 
 
 
 ~~~DB Architecture~~~
+User
+-id
+-name
 
+
+
+Card
+
+
+
+~~~
+Shard
+Card-level
 
 
 
