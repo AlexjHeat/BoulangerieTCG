@@ -76,29 +76,10 @@ TODO actually separate basic card images into fragments that get sent instead.  
 *Private [true/false] : Determines whether deck may be viewed by other players or not.
 
 
-
 ~~~Class Architecture~~~
 Duel class
 trade class
 
-error module (no class just functions)
-
-
-
-~~~DB Architecture~~~
-User
--id
--name
-
-
-
-Card
-
-
-
-~~~
-Shard
-Card-level
-
-
+error module
+image module
 

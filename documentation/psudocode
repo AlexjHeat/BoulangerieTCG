@@ -1,0 +1,109 @@
++: will be checked in verify command
+-: will be checked in own command function
+
+Verify(...) is solely to verify that the arguments of the command message are valid.  It will always terminate
+the command function if not
+
+*AddFragment [card name/id] [amount] @user
+    +Verify that the card exists
+    -Verify that the user is in database, add user if not
+    -Verify that the amount is above 0 and below arbitrarily set limit
+
+*RemoveFragment [card name/id] [amount] @user
+    +Verify that the card exists
+    -Verify that the user is in database
+    -Verify that the amount is above 0 and below arbitrarily set limit
+
+*SetLevel [card name/id] [level] @user
+    +Verify that the card exists
+    -Verify that the user is in database
+    +Verify that the level is between 0 and 7
+
+*CollectionSet[Set Name]
+    -Verify if the set name exists or not
+
+*CollectionAddUser @user [rarity] [type] [post,lurk,react] "flavor"
+    +Verify if the rarity is a correct value
+    +Verify if the type is a correct value
+    +Verify if the total stats are within the value range
+    +Verify if the flavor is within text limit
+
+*CollectionAddCustom "name" [rarity] [type] [post,lurk,react] "flavor"
+    +Verify if the name is within text limit
+    +Verify if the rarity is a correct value
+    +Verify if the type is a correct value
+    +Verify if the total stats are within the value range
+    +Verify if the flavor is within text limit
+    -Verify that image is attached
+
+*CollectionRemove [card name/id]
+    +Verify that card exists
+
+
+*FreePull @user : gives them a free pack, what else
+    -Verify if user is in database, add them if not
+
+
+*EditName [card name/id] [name]
+    +Verify that card exists
+    +Verify if the name is within text limit
+
+*EditArt [card name/id]
+    +Verify that card exists
+    -Verify that image is attached
+
+*EditFlavor [card name/id] [flavor]
+    +Verify that card exists
+    +Verify if the flavor is within text limit
+
+*EditStats [card name/id] [stats]
+    +Verify that card exists
+    +Verify if the total stats are within the value range
+
+*Stats
+
+*StatsBoost [setName] [%]
+
+*StatsBoostReset
+
+*StatsSettings
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Pull(p)
+
+*Trade(t) @user
+
+*Duel(d) @user
+
+*Activate(a) [card name/id, card name/id, card name/id]
++Verify that card exists x3
+
+*View(v) [card name/id] [level]
++Verify that card exists
++Verify that the level is between 0 and 7
+
+*Deck @user : Displays deck of player.  If no user is supplied, displays own deck
+
+*Private [true/false]
+
+
+
+
+
+Store max lengths in config?
+
+
+
+
+
+
+-command:
+
+
+
+
+
+
+
+

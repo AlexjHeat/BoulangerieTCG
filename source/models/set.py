@@ -8,4 +8,4 @@ class Set(Base):
     name = Column(String)
     total_cards = Column(Integer)
 
-    cards = relationship("Set", back_populates="set")
+    cards = relationship("Card", back_populates="set")

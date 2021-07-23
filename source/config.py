@@ -4,3 +4,7 @@ DATABASE_URI = "postgresql+psycopg2://postgres:182fideo@localhost:5432/Boulanger
 DISCORD_TOKEN = 'NzQ3MjUwMjk1MjM4NTU3Njk5.X0MJEQ.z3EPVVzvZLz3cSkREmkEw8EMpYA'
 
 COMMAND_PREFIX = '.'
+
+
+MAX_FLAVOR_TEXT
+MAX_CARDNAME_TEXT

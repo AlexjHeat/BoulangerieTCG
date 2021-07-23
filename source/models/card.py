@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Column, String, Enum
+from sqlalchemy import ForeignKey, Column, String, Integer, Enum
 from sqlalchemy.orm import relationship
 from source.db import Base
 import enum
@@ -28,7 +28,7 @@ class Card(Base):
 
     card_instances = relationship("CardInstance", back_populates="card")
     card_levels = relationship("CardLevel", back_populates="card")
-    set = relationship("Cards", back_populates="")
+    set = relationship("Set", back_populates="cards")
 
     def __repr__(self):
         return f'Card: {self.id}'
