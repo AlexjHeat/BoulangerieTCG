@@ -1,7 +1,6 @@
 import os
 from discord.ext import commands
 from source import config
-from source import verify
 
 
 bot = commands.Bot(command_prefix=config.COMMAND_PREFIX)
@@ -19,8 +18,9 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
 
+
 for filename in os.listdir('./source/cogs'):
     if filename.endswith('.py'):
-        bot.load_extension(f'cogs.{filename[:-3]}')
+        bot.load_extension(f'source.cogs.{filename[:-3]}')
 
 bot.run(config.DISCORD_TOKEN)
