@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Enum
+from sqlalchemy.orm import relationship
 from source.db import Base
 import enum
 
@@ -12,13 +13,13 @@ class cardTypeEnum(enum.Enum):
 
 class Card(Base):
     __tablename__ = 'cards'
-    id = Column('Card ID', String, primary_key=True)
+    id = Column(String, primary_key=True)
     title = Column(String)
     type = Column('value', Enum(cardTypeEnum))
     artPath = Column(String)
 
-    def __init__(self, id):
-        self.id = id
+    card_instances = relationship("CardInstance", back_populates="card")
+    card_levels = relationship("CardLevel", back_populates="card")
 
     def __repr__(self):
         return f'Card: {self.id}'
