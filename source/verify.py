@@ -2,12 +2,13 @@ from sqlalchemy.orm import Query
 from discord.ext import commands
 from source import config
 from source.models.card import Card, CardTypeEnum, RarityEnum
+from source.models.set import Set
 
 
 async def verify_card(session, ctx, card):
-    q = session.query(Card).filter(Card.id == card)
+    q = session.query(Card).filter(Card.id == card.upper())
     if not session.query(q.exists()).scalar():
-        q = session.query(Card).filter(Card.id == card)
+        q = session.query(Card).filter(Card.id == card.upper())
         if not session.query(q.exists()).scalar():
             await ctx.send(f'CARD ERROR: **{card}** does not exist.')
             return False
@@ -48,6 +49,14 @@ async def verify_flavor(ctx, flavor):
         return False
 
 
+async def verify_set(session, ctx, set):
+    q = session.query(Card).filter(Set.prefix == set.upper())
+    if not session.query(q.exists()).scalar():
+        await ctx.send(f'SET ERROR: **{set.upper()}** does not exist.')
+        return False
+
+
+
 async def verify_stats(session, ctx, stats, card=False, rarity=False):
     pass
     # TODO check if stat total is within range set by config, using either the value for rarity or card
@@ -56,7 +65,7 @@ async def verify_stats(session, ctx, stats, card=False, rarity=False):
 # TODO verify image function
 
 async def verify(session, ctx, card=False, card_title=False, rarity=False,
-                 type=False, level=False, flavor=False):
+                 type=False, level=False, flavor=False, set=False):
     result = True
     if card:
         if not await verify_card(session, ctx, card):
@@ -75,6 +84,9 @@ async def verify(session, ctx, card=False, card_title=False, rarity=False,
             result = False
     if flavor:
         if not await verify_flavor(ctx, flavor):
+            result = False
+    if set:
+        if not await verify_flavor(session, ctx, flavor):
             result = False
     return result
 

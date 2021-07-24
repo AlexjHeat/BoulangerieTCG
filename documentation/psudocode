@@ -22,7 +22,7 @@ the command function if not
 *CollectionSet[Set Name]
     -Verify if the set name exists or not
 
-*CollectionAddUser @user [rarity] [type] [stats] "flavor"
+*CollectionAddUser @user [Set] [rarity] [type] [stats] "flavor"
     +Verify if the rarity is a correct value
     +Verify if the type is a correct value
     +Verify if the total stats are within the value range
