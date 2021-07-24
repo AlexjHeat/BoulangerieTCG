@@ -1,79 +1,81 @@
+from sqlalchemy.orm import Query
 from discord.ext import commands
+from source import config
+from source.models.card import Card, CardTypeEnum, RarityEnum
 
 
+async def verify_card(session, ctx, card):
+    q = session.query(Card).filter(Card.id == card)
+    if not session.query(q.exists()).scalar():
+        q = session.query(Card).filter(Card.id == card)
+        if not session.query(q.exists()).scalar():
+            await ctx.send(f'CARD ERROR: **{card}** does not exist.')
+            return False
+    return True
 
 
-def verify_card(card):
-    pass
-    # TODO check if card is in database as name or id, if not then send error message and return false
+async def verify_card_title(ctx, card_title):
+    if len(card_title) > config.MAX_CARDTITLE_LENGTH:
+        await ctx.send(f'TITLE ERROR: Title must be less than {config.MAX_CARDTITLE_LENGTH}')
+        return False
 
 
-def verify_card_name(card_name):
-    pass
-    # TODO check if cardname length is within range set by config.py
+async def verify_rarity(ctx, rarity):
+    rarity_values = set(item.value for item in RarityEnum)
+    if rarity.upper() not in rarity_values:
+        await ctx.send(f'RARITY ERROR: **{rarity}** is not in the list {rarity_values}')
+        return False
 
 
-def verify_rarity(rarity):
-    pass
-    # TODO check if rarity is in enum list
+async def verify_type(ctx, type):
+    type_values = set(item.value for item in CardTypeEnum)
+    if type.upper() not in type_values:
+        await ctx.send(f'RARITY ERROR: **{type}** is not in the list {type_values}')
+        return False
 
 
-def verify_type(type):
-    pass
-    # TODO check if type is in enum list
+async def verify_level(ctx, level):
+    if level.isdigit():
+        if int(level) >= 0 and int(level) <= 7:
+            return
+    await ctx.send(f'LEVEL ERROR: level must be between 0 and 7.')
+    return False
 
 
-def verify_level(level):
-    pass
-    # TODO check if level is between 0 and 7
+async def verify_flavor(ctx, flavor):
+    if len(flavor) > config.MAX_FLAVOR_LENGTH:
+        await ctx.send(f'FLAVOR TEXT ERROR: Flavor must be less than {config.MAX_FLAVOR_LENGTH}')
+        return False
 
 
-def verify_flavor(flavor):
-    pass
-    # TODO check if flavor length is within range set by config.py
-
-
-def verify_stats(stats, rarity=False, card=False):
+async def verify_stats(session, ctx, stats, card=False, rarity=False):
     pass
     # TODO check if stat total is within range set by config, using either the value for rarity or card
 
 
 # TODO verify image function
 
-def verify(ctx, card=False, card_name=False, rarity=False, type=False, level=False, flavor=False, stats=False):
+async def verify(session, ctx, card=False, card_title=False, rarity=False,
+                 type=False, level=False, flavor=False):
+    result = True
     if card:
-        if not verify_card(card):
-            await ctx.send("Card id/name does not exist.")
-            return False
-
-    if card_name:
-        if not verify_card_name(card_name):
-            await ctx.send("Card name must be ___ characters or less.")
-            return False
-
+        if not await verify_card(session, ctx, card):
+            result = False
+    if card_title:
+        if not await verify_card_title(ctx, card_title):
+            result = False
     if rarity:
-        if not verify_rarity(rarity):
-            await ctx.send("Rarity is invalid.")
-            return False
-
+        if not await verify_rarity(ctx, rarity):
+            result = False
     if type:
-        if not verify_type(type):
-            await ctx.send("Type is invalid.")
-            return False
-
+        if not await verify_type(ctx, type):
+            result = False
     if level:
-        if not verify_level(level):
-            await ctx.send("level must be between 0 and 7.")
-            return False
-
+        if not await verify_level(ctx, level):
+            result = False
     if flavor:
-        if not verify_flavor(flavor):
-            await ctx.send("Flavor must be ___ characters or less")
-            return False
-
-    if stats:
-        if not verify_stats(stats, card=card, stat=stats):
-            await ctx.send("Statsdsf.")
-            return False
+        if not await verify_flavor(ctx, flavor):
+            result = False
+    return result
 
 

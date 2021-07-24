@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, Boolean, String, ForeignKey
 from sqlalchemy.orm import relationship
 from source.db import Base
+from source.models import user
 
 class CardInstance(Base):
     __tablename__ = 'card_instances'

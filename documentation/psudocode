@@ -22,13 +22,13 @@ the command function if not
 *CollectionSet[Set Name]
     -Verify if the set name exists or not
 
-*CollectionAddUser @user [rarity] [type] [post,lurk,react] "flavor"
+*CollectionAddUser @user [rarity] [type] [stats] "flavor"
     +Verify if the rarity is a correct value
     +Verify if the type is a correct value
     +Verify if the total stats are within the value range
     +Verify if the flavor is within text limit
 
-*CollectionAddCustom "name" [rarity] [type] [post,lurk,react] "flavor"
+*CollectionAddCustom "name" [rarity] [type] [stats] "flavor"
     +Verify if the name is within text limit
     +Verify if the rarity is a correct value
     +Verify if the type is a correct value
@@ -44,7 +44,7 @@ the command function if not
     -Verify if user is in database, add them if not
 
 
-*EditName [card name/id] [name]
+*EditTitle [card name/id] [title]
     +Verify that card exists
     +Verify if the name is within text limit
 

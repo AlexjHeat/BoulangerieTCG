@@ -1,19 +1,20 @@
 from sqlalchemy import ForeignKey, Column, String, Integer, Enum
 from sqlalchemy.orm import relationship
 from source.db import Base
+from source.models import card_instance, card_level, set
 import enum
 
 class CardTypeEnum(enum.Enum):
-    auv = "Auvergne"
-    burg = "Burgundy"
-    lyon = "Lyonnais"
-    prov = "Provence"
+    auv = "AUVERGNE"
+    burg = "BURGUNDY"
+    lyon = "LYONNAIS"
+    prov = "PROVENCE"
 
 
 class RarityEnum(enum.Enum):
-    std = "standard"
-    rare = "rare"
-    lgnd = "legendary"
+    std = "STANDARD"
+    rare = "RARE"
+    lgnd = "LEGENDARY"
 
 
 
