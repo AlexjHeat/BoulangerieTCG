@@ -1,20 +1,20 @@
-from sqlalchemy import ForeignKey, Column, String, Integer, Enum
+from sqlalchemy import ForeignKey, Column, String, Enum
 from sqlalchemy.orm import relationship
 from source.db import Base
 from source.models import card_instance, card_level, set
 import enum
 
-class CardTypeEnum(enum.Enum):
-    auv = "AUVERGNE"
-    burg = "BURGUNDY"
-    lyon = "LYONNAIS"
-    prov = "PROVENCE"
+class HouseEnum(enum.Enum):
+    AUV = "AUVERGNE"
+    BURG = "BURGUNDY"
+    LYON = "LYONNAIS"
+    PROV = "PROVENCE"
 
 
 class RarityEnum(enum.Enum):
-    std = "STANDARD"
-    rare = "RARE"
-    lgnd = "LEGENDARY"
+    STD = "STANDARD"
+    RARE = "RARE"
+    LGN = "LEGENDARY"
 
 
 
@@ -23,8 +23,9 @@ class Card(Base):
     id = Column(String, primary_key=True)
     prefix = Column(String, ForeignKey('sets.prefix'))
     title = Column(String)
-    type = Column(Enum(CardTypeEnum))
+    house = Column(Enum(HouseEnum))
     rarity = Column(Enum(RarityEnum))
+    flavor = Column(String)
     artPath = Column(String)
 
     card_instances = relationship("CardInstance", back_populates="card")

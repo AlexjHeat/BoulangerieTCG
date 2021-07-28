@@ -2,9 +2,9 @@ import random
 
 # 0 = no advantage, 1 = p1 advantage, 2 = p2 advantage
 
-advantage = 1
-p1_stat = 40
-p2_stat = 40
+advantage = 2
+p1_stat = 75
+p2_stat = 120
 number_of_tests = 1000000
 
 

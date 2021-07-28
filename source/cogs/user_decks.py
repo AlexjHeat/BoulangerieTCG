@@ -1,5 +1,5 @@
 from discord.ext import commands
-from source.verify import verify
+from source.verify import verify_card
 from source.db import Session
 
 class AdminEdit(commands.Cog):
@@ -8,13 +8,14 @@ class AdminEdit(commands.Cog):
 
 
     @commands.command()
-    async def addFragment(self, ctx, card, quantity=1):
+    async def AddFragment(self, ctx, card, quantity=1):
         session = Session()
-        if not verify(session, ctx, card=card):
-            # send message with command instructions
-            return
+        card = await verify_card(session, ctx, card)
+        if not card:
+            await ctx.send("Command format: (do not include brackets)```.AddFragment [card name/ID] [quantity]```")
+            session.close()
+            return False
 
-        # retrieve card_id if card is a name
         # get @user from ctx
         # verify if user exists, if not create it
         # add fragments to user (maybe a User class function)
@@ -24,11 +25,13 @@ class AdminEdit(commands.Cog):
 
 
     @commands.command()
-    async def removeFragment(self, ctx, card, quantity=1):
+    async def RemoveFragment(self, ctx, card, quantity=1):
         session = Session()
-        if not verify(session, ctx, card=card):
-            # send message with command instructions
-            return
+        card = await verify_card(session, ctx, card)
+        if not card:
+            await ctx.send("Command format: (do not include brackets)```.RemoveFragment [card name/ID] [quantity]```")
+            session.close()
+            return False
 
         # retrieve card_id if card is a name
         # get @user from ctx
@@ -41,10 +44,13 @@ class AdminEdit(commands.Cog):
 
 
     @commands.command()
-    async def setLevel(self, ctx, card, level):
+    async def SetLevel(self, ctx, card, level):
         session = Session()
-        if not verify(session, ctx, card=card, level=level):
-            return
+        card = await verify_card(session, ctx, card)
+        if not card:
+            await ctx.send("Command format: (do not include brackets)```.SetLevel [card name/ID] [level]```")
+            session.close()
+            return False
 
         # retrieve card_id if card is a name
         # get @user from ctx

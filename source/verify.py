@@ -1,23 +1,24 @@
-from sqlalchemy.orm import Query
-from discord.ext import commands
+from sqlalchemy import func
 from source import config
-from source.models.card import Card, CardTypeEnum, RarityEnum
+from source.models.card import Card, HouseEnum, RarityEnum
 from source.models.set import Set
 
 
 async def verify_card(session, ctx, card):
-    q = session.query(Card).filter(Card.id == card.upper())
-    if not session.query(q.exists()).scalar():
-        q = session.query(Card).filter(Card.id == card.upper())
-        if not session.query(q.exists()).scalar():
-            await ctx.send(f'CARD ERROR: **{card}** does not exist.')
-            return False
-    return True
+    card = card.upper()
+    q1 = session.query(Card).filter(func.upper(Card.id) == card).first()
+    q2 = session.query(Card).filter(func.upper(Card.title) == card).first()
+    if q1 is not None:
+        return q1.id
+    if q2 is not None:
+        return q2.id
+    await ctx.send(f'CARD ERROR: **{card}** does not exist.')
+    return False
 
 
 async def verify_card_title(ctx, card_title):
-    if len(card_title) > config.MAX_CARDTITLE_LENGTH:
-        await ctx.send(f'TITLE ERROR: Title must be less than {config.MAX_CARDTITLE_LENGTH}')
+    if len(card_title) > config.MAX_TITLE_LENGTH:
+        await ctx.send(f'TITLE ERROR: Title must be less than {config.MAX_TITLE_LENGTH}')
         return False
 
 
@@ -29,7 +30,7 @@ async def verify_rarity(ctx, rarity):
 
 
 async def verify_type(ctx, type):
-    type_values = set(item.value for item in CardTypeEnum)
+    type_values = set(item.value for item in HouseEnum)
     if type.upper() not in type_values:
         await ctx.send(f'RARITY ERROR: **{type}** is not in the list {type_values}')
         return False
@@ -64,6 +65,8 @@ async def verify_stats(session, ctx, stats, card=False, rarity=False):
 
 # TODO verify image function
 
+
+"""
 async def verify(session, ctx, card=False, card_title=False, rarity=False,
                  type=False, level=False, flavor=False, set=False):
     result = True
@@ -89,5 +92,5 @@ async def verify(session, ctx, card=False, card_title=False, rarity=False,
         if not await verify_flavor(session, ctx, flavor):
             result = False
     return result
-
+"""
 

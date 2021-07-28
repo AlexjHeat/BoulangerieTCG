@@ -1,7 +1,7 @@
 # This file is to simulate card spread and pull rates
 # Top values are adjustable to achieve the optimal results
 
-cards_per_full_upgrade = 1+2+3+4+5+5+5
+cards_per_full_upgrade = 1+2+3+4+5+6+7
 # Rarity: [standard, rare, legendary]
 pulls_per_day = 1
 card_per_pull = 5
@@ -10,7 +10,7 @@ packs_per_rare = 1
 packs_per_legend = 7
 
 # Card Amount
-standard_amt = 36
+standard_amt = 40
 rare_amt = 16
 legendary_amt = 4
 
