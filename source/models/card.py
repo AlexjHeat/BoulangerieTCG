@@ -5,16 +5,16 @@ from source.models import card_instance, card_level, set
 import enum
 
 class HouseEnum(enum.Enum):
-    AUV = "AUVERGNE"
-    BURG = "BURGUNDY"
-    LYON = "LYONNAIS"
-    PROV = "PROVENCE"
+    Auvergne = "AUV"
+    Burgundy = "BUR"
+    Lyonnais = "LYO"
+    Provence = "PRO"
 
 
 class RarityEnum(enum.Enum):
-    STD = "STANDARD"
-    RARE = "RARE"
-    LGN = "LEGENDARY"
+    Standard = "STD"
+    Rare = "RAR"
+    Legendary = "LGN"
 
 
 

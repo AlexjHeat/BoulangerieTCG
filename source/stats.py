@@ -16,19 +16,19 @@ def pick_stat(stats):
     return 2
 
 
-def populate_stats(session, stats, id):
-    if sum(stats) < MAX_STATS[0]:
+def populate_stats(session, stats, card_id):
+    if sum(stats) <= MAX_STATS[0]:
         rarity = 1
-    elif sum(stats) < MAX_STATS[1]:
+    elif sum(stats) <= MAX_STATS[1]:
         rarity = 2
-    elif sum(stats) < MAX_STATS[2]:
+    elif sum(stats) <= MAX_STATS[2]:
         rarity = 3
     else:
         return False
-    q = session.query(CardLevel).filter(CardLevel.card_id == id and CardLevel.level == 1).first()
-    q.post = stats[0]
-    q.lurk = stats[1]
-    q.react = stats[2]
+    q_level = session.query(CardLevel).filter(CardLevel.card_id == card_id, CardLevel.level == 1).first()
+    q_level.post = stats[0]
+    q_level.lurk = stats[1]
+    q_level.react = stats[2]
 
     increment = [1, 1, 1]
     for lvl in range(2, 8):
@@ -39,8 +39,7 @@ def populate_stats(session, stats, id):
             stats[i] += 1
             increment[i] += 1
 
-        q = session.query(CardLevel).filter(CardLevel.card_id == id and CardLevel.level == lvl).first()
-        q.post = stats[0]
-        q.lurk = stats[1]
-        q.react = stats[2]
-
+        q_level = session.query(CardLevel).filter(CardLevel.card_id == card_id, CardLevel.level == lvl).first()
+        q_level.post = stats[0]
+        q_level.lurk = stats[1]
+        q_level.react = stats[2]

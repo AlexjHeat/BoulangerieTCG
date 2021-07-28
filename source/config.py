@@ -12,4 +12,4 @@ MAX_TITLE_LENGTH = 10
 MAX_STATS = [13, 22, 33]
 MIN_STATS = [11, 19, 29]
 
-COLOR = {'AUVERGNE': 0xd10a07, 'BURGUNDY': 0xd10a07}
+COLOR = {'Auvergne': 0x4378c2, 'Burgundy': 0xebab42, 'Lyonnais': 0xac496b, 'Provence': 0x466766}

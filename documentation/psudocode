@@ -19,16 +19,20 @@ the command function if not
     -Verify that the user is in database
     +Verify that the level is between 0 and 7
 
-*CollectionSet[Set Name]
-    -Verify if the set name exists or not
+*AddSet [prefix] [name]
+    -Verify if new prefix/name within text limits
 
-*CollectionAddUser @user [Set] [rarity] [type] [stats] "flavor"
+*EditSet [old prefix] [new prefix] [name]
+    +Verify if the old set prefix exists or not
+    -Verify if new prefix/name within text limits
+
+*AddUserCard @user [set] [rarity] [type] [stats] "flavor"
     +Verify if the rarity is a correct value
     +Verify if the type is a correct value
     +Verify if the total stats are within the value range
     +Verify if the flavor is within text limit
 
-*CollectionAddCustom "name" [rarity] [type] [stats] "flavor"
+*AddCustomCard "name" [set] [rarity] [type] [stats] "flavor"
     +Verify if the name is within text limit
     +Verify if the rarity is a correct value
     +Verify if the type is a correct value
@@ -36,7 +40,7 @@ the command function if not
     +Verify if the flavor is within text limit
     -Verify that image is attached
 
-*CollectionRemove [card name/id]
+*RemoveCard [card name/id]
     +Verify that card exists
 
 

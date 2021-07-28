@@ -30,17 +30,20 @@ class CollectionAdd(commands.Cog):
 
     @commands.command()
     async def AddCustomCard(self, ctx):
+        # TODO: log errors
+        # TODO: fix button timeout error (AttributeError) that timeout sending back false causes
+
         session = Session()
         try:
             prefix = await set_input(self, session, ctx)
-            q_set = session.query(Set).filter(Set.prefix == prefix).first()
-            q_set.total_cards += 1
+            my_set = session.query(Set).filter(Set.prefix == prefix).first()
+            my_set.total_cards += 1
 
-            card_id = q_set.prefix + str(q_set.total_cards)
+            card_id = my_set.prefix + str(my_set.total_cards)
             my_card = Card(id=card_id, prefix=prefix)
 
-            check = await populate_card(self, ctx, my_card, title=True, rarity=True, house=True, flavor=True, image=True)
-            if check is False:
+            if await populate_card(self, ctx, my_card,
+                                   title=True, rarity=True, house=True, flavor=True, image=True) is False:
                 session.rollback()
                 return False
 
@@ -48,11 +51,11 @@ class CollectionAdd(commands.Cog):
             for lvl in range(1, 8):
                 session.add(CardLevel(card_id=my_card.id, level=lvl))
 
-            stats = await stats_input(self, ctx, my_card.rarity)
-            if stats is False:
+            my_stats = await stats_input(self, ctx, my_card.rarity)
+            if my_stats is False:
                 session.rollback()
                 return False
-            populate_stats(session, stats, my_card.id)
+            populate_stats(session, my_stats, my_card.id)
 
             if await accept_card(self, session, ctx, my_card) is False:
                 session.rollback()
@@ -66,8 +69,17 @@ class CollectionAdd(commands.Cog):
         except exc.SQLAlchemyError as e:
             session.rollback()
             print(type(e))
-            await ctx.send("Command terminated.")
+            print('edit_cards.AddCustomCard(): encountered SQLAlchemy error, function terminated')
+            await ctx.send("Encountered error, card creation terminated.")
             return False
+
+        except asyncio.TimeoutError as e:
+            session.rollback()
+            print(type(e))
+            print('edit_cards.AddCustomCard(): encountered Timeout error, function terminated')
+            await ctx.send("Card creation: timed out")
+            return False
+
         else:
             session.commit()
 
@@ -103,3 +115,4 @@ class CollectionAdd(commands.Cog):
 
 def setup(bot):
     bot.add_cog(CollectionAdd(bot))
+    
