@@ -29,14 +29,14 @@ async def accept_card(self, session, ctx, my_card):
 
     embed = discord.Embed(
         title=my_card.id,
-        color=COLOR_HEX[my_card.house]
+        color=COLOR_HEX[my_card.house.name]
     )
     my_set = session.query(Set).filter(Set.prefix == my_card.prefix).first()
     embed.set_thumbnail(url='attachment://image.png')
     embed.add_field(name='Card Title', value=my_card.title, inline=False)
     embed.add_field(name='Set', value=my_set.name, inline=False)
-    embed.add_field(name='House', value=my_card.house, inline=True)
-    embed.add_field(name='Rarity', value=my_card.rarity, inline=True)
+    embed.add_field(name='House', value=my_card.house.name, inline=True)
+    embed.add_field(name='Rarity', value=my_card.rarity.name, inline=True)
 
     stats = session.query(CardLevel).filter(CardLevel.card_id == my_card.id).first()
     embed.add_field(name='Post - Lurk - React',
@@ -81,7 +81,7 @@ async def accept_card(self, session, ctx, my_card):
             elif res_text == 'House':
                 my_card.house = await house_input(self, ctx)
                 embed.remove_field(2)
-                embed.insert_field_at(2, name="House", value=my_card.house, inline=True)
+                embed.insert_field_at(2, name="House", value=my_card.house.name, inline=True)
 
             elif res_text == 'Flavor':
                 my_card.flavor = await flavor_input(self, ctx)
@@ -127,7 +127,6 @@ async def check_length(self, ctx, max_len):
             if len(m.content) < max_len:
                 return True
         return False
-
     message = await self.bot.wait_for('message', check=check, timeout=60)
     return message.content
 
@@ -135,12 +134,7 @@ async def check_length(self, ctx, max_len):
 async def check_author(self, ctx):
     def check(m):
         return m.author == ctx.author and m.channel == ctx.channel
-
-    try:
-        message = await self.bot.wait_for('message', check=check, timeout=60)
-    except asyncio.TimeoutError:
-        await ctx.send('Card creation: timed out')
-        return False
+    message = await self.bot.wait_for('message', check=check, timeout=60)
     return message
 
 
@@ -159,14 +153,14 @@ async def rarity_input(self, ctx):
     rarity_list = [item.value for item in RarityEnum]
     await ctx.send(f'Enter one of the following rarities {rarity_list}:')
     rarity = await check_list(self, ctx, rarity_list)
-    return RarityEnum(rarity).name
+    return RarityEnum(rarity)
 
 
 async def house_input(self, ctx):
     house_list = [item.value for item in HouseEnum]
     await ctx.send(f'Enter one of the following houses {house_list}:')
     house = await check_list(self, ctx, house_list)
-    return HouseEnum(house).name
+    return HouseEnum(house)
 
 
 async def flavor_input(self, ctx):
@@ -184,9 +178,6 @@ async def stats_input(self, ctx, rarity):
 
     while True:
         message = await check_author(self, ctx)
-        if message is False:
-            return False
-
         stats = message.content.split()
         stats_int = [int(x) for x in stats if x.isdigit()]
         if len(stats_int) == len(rarity_list):
@@ -227,4 +218,4 @@ async def populate_card(self, ctx, my_card, title=False, rarity=False, house=Fal
         filename = './media/card_art/' + my_card.id + '_art.png'
         await image.save(filename)
         my_card.artPath = filename
-    return True
+    return

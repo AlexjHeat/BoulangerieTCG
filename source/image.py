@@ -3,7 +3,7 @@ import timeit
 from PIL import Image, ImageDraw, ImageFont
 from source.db import Session
 from source.config import COLOR_STR
-from source.models.card import Card
+from source.models.card import Card, HouseEnum
 from source.models.card_level import CardLevel
 import textwrap
 
@@ -72,25 +72,37 @@ def add_stats(im_template, post, lurk, react):
 
 def create_card(session, my_card, level):
     if level < 6:
-        template_address = f'./media/templates/{my_card.house}.png'
+        template_address = f'./media/templates/{my_card.house.name}.png'
     elif level < 7:
-        template_address = f'./media/templates/{my_card.house}6.png'
+        template_address = f'./media/templates/{my_card.house.name}6.png'
     else:
-        template_address = f'./media/templates/{my_card.house}7.png'
+        template_address = f'./media/templates/{my_card.house.name}7.png'
+
+    try:
+        with Image.open(template_address) as im_template:
+            im_template = add_art(im_template, my_card.artPath)
+            im_template = add_title(im_template, my_card.title)
+            im_template = add_id(im_template, my_card.id, my_card.house.name)
+            im_template = add_emblem(im_template, my_card.house.name, level)
+            im_template = add_flavor(im_template, my_card.flavor)
+
+            q_level = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == level).first()
+            im_template = add_stats(im_template, q_level.post, q_level.lurk, q_level.react)
+
+        im_template.save(f'./media/cards/{my_card.id}_{level}.png')
+    except ValueError as e:
+        print(type(e))
+        return False
 
 
-    with Image.open(template_address) as im_template:
-        im_template = add_art(im_template, my_card.artPath)
-        im_template = add_title(im_template, my_card.title)
-        im_template = add_id(im_template, my_card.id, my_card.house)
-        im_template = add_emblem(im_template, my_card.house, level)
-        im_template = add_flavor(im_template, my_card.flavor)
-
-        q_level = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == level).first()
-        im_template = add_stats(im_template, q_level.post, q_level.lurk, q_level.react)
-
-    im_template.save(f'./media/cards/{my_card.id}_{level}.png')
+session = Session()
+q = session.query(Card).filter(Card.id == 'LB5').first()
+test = Card(id="test", house=HouseEnum["auvergne"])
+session.add(test)
+print(HouseEnum("AUV"))
+#print(q.house)
+print(test.house)
 
 
-
-
+# create_card(session, q, 1)
+session.rollback()
