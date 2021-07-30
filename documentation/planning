@@ -54,7 +54,6 @@ Rolling/Random mechanic ideas:
 
 ~~~User Commands~~~
 *Pull(p) : checks if user has used their pull for the day, if not, briefly displays slot machine gif than delivers 3 cards
-TODO actually separate basic card images into fragments that get sent instead.  They only see part of the card.
 
 *Trade(t) @user : Post embed message to act as trade block.  Use (+/-)[card name/id] to add/remove items from the trade
     block.  Both users must hit separate buttons to accept trade.  If any item is removed/added from trade block,

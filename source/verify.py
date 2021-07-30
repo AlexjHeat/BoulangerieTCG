@@ -4,15 +4,14 @@ from source.models.card import Card, HouseEnum, RarityEnum
 from source.models.set import Set
 
 
-async def verify_card(session, ctx, card):
+def verify_card(session, card):
     card = card.upper()
-    q1 = session.query(Card).filter(func.upper(Card.id) == card).first()
-    q2 = session.query(Card).filter(func.upper(Card.title) == card).first()
-    if q1 is not None:
-        return q1.id
-    if q2 is not None:
-        return q2.id
-    await ctx.send(f'CARD ERROR: **{card}** does not exist.')
+    q_id = session.query(Card).filter(func.upper(Card.id) == card).one()
+    q_title = session.query(Card).filter(func.upper(Card.title) == card).first()
+    if q_id is not None:
+        return q_id.id
+    if q_title is not None:
+        return q_title.id
     return False
 
 
@@ -44,12 +43,6 @@ async def verify_level(ctx, level):
     return False
 
 
-async def verify_flavor(ctx, flavor):
-    if len(flavor) > config.MAX_FLAVOR_LENGTH:
-        await ctx.send(f'FLAVOR TEXT ERROR: Flavor must be less than {config.MAX_FLAVOR_LENGTH}')
-        return False
-
-
 async def verify_set(session, ctx, set):
     q = session.query(Card).filter(Set.prefix == set.upper())
     if not session.query(q.exists()).scalar():
@@ -58,12 +51,7 @@ async def verify_set(session, ctx, set):
 
 
 
-async def verify_stats(session, ctx, stats, card=False, rarity=False):
-    pass
-    # TODO check if stat total is within range set by config, using either the value for rarity or card
 
-
-# TODO verify image function
 
 
 """

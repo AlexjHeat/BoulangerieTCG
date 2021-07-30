@@ -70,7 +70,7 @@ def add_stats(im_template, post, lurk, react):
     return im_template
 
 
-def create_card(session, my_card, level):
+def create_image(session, my_card, level):
     if level < 6:
         template_address = f'./media/templates/{my_card.house.name}.png'
     elif level < 7:
@@ -90,19 +90,7 @@ def create_card(session, my_card, level):
             im_template = add_stats(im_template, q_level.post, q_level.lurk, q_level.react)
 
         im_template.save(f'./media/cards/{my_card.id}_{level}.png')
-    except ValueError as e:
+    except FileNotFoundError as e:
         print(type(e))
+        print(f'File path does not exist for opening/saving during creation of {my_card.id}-{level}')
         return False
-
-
-session = Session()
-q = session.query(Card).filter(Card.id == 'LB5').first()
-test = Card(id="test", house=HouseEnum["auvergne"])
-session.add(test)
-print(HouseEnum("AUV"))
-#print(q.house)
-print(test.house)
-
-
-# create_card(session, q, 1)
-session.rollback()
