@@ -3,7 +3,9 @@ from discord.ext import commands
 from sqlalchemy import exc
 from source.db import Session
 from source.stats import populate_stats
+from source.image import create_card
 from source.input import *
+from source.verify import verify_card
 from source.models.card import Card
 from source.models.set import Set
 from source.models.card_level import CardLevel
@@ -19,8 +21,24 @@ class CollectionAdd(commands.Cog):
 
 
     @commands.command()
-    async def AddUserCard(self, ctx, prefix, rarity, type, react, post, lurk, flavor):
+    async def AddUserCard(self, ctx):
         session = Session()
+
+        user = ctx.message.mentions[0]
+        print(user)
+
+        prefix = await set_input(self, session, ctx)
+        my_set = session.query(Set).filter(Set.prefix == prefix).first()
+        my_set.total_cards += 1
+
+        card_id = my_set.prefix + str(my_set.total_cards)
+        my_card = Card(id=card_id, prefix=prefix)
+
+        if await populate_card(self, ctx, my_card, rarity=True, house=True, flavor=True) is False:
+            session.rollback()
+            return False
+
+        # Grab the users information
 
 
 
@@ -30,9 +48,6 @@ class CollectionAdd(commands.Cog):
 
     @commands.command()
     async def AddCustomCard(self, ctx):
-        # TODO: log errors
-        # TODO: fix button timeout error (AttributeError) that timeout sending back false causes
-
         session = Session()
         try:
             prefix = await set_input(self, session, ctx)
@@ -61,17 +76,11 @@ class CollectionAdd(commands.Cog):
                 session.rollback()
                 return False
 
-            # Send card to image processing
-            # Image processing will make the new cards according to the current card + level objects in database
-            # Image processing only returns true or false based on success
-            # If false, rollback, delete image, and return
+            for lvl in range(1, 8):
+                if create_card(session, my_card, lvl) is False:
+                    return False
 
-        except exc.SQLAlchemyError as e:
-            session.rollback()
-            print(type(e))
-            print('edit_cards.AddCustomCard(): encountered SQLAlchemy error, function terminated')
-            await ctx.send("Encountered error, card creation terminated.")
-            return False
+
 
         except asyncio.TimeoutError as e:
             session.rollback()
@@ -100,14 +109,12 @@ class CollectionAdd(commands.Cog):
 
 
     @commands.command()
-    async def EditCard(self, ctx):
+    async def EditCard(self, ctx, card_id):
         session = Session()
 
-        # if not verify(session, ctx, set=old_prefix):
-        # send message with command instructions
-        # return False
-        # verify_set function to verify new_prefix(4) and setName length
-        # Add set to database
+        card_id = verify_card(session, ctx, card_id)
+        if card_id is False:
+            return False
 
         session.commit()
         session.close()

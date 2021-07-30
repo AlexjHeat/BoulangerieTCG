@@ -29,7 +29,7 @@ async def accept_card(self, session, ctx, my_card):
 
     embed = discord.Embed(
         title=my_card.id,
-        color=COLOR[my_card.house]
+        color=COLOR_HEX[my_card.house]
     )
     my_set = session.query(Set).filter(Set.prefix == my_card.prefix).first()
     embed.set_thumbnail(url='attachment://image.png')
@@ -116,7 +116,7 @@ async def check_list(self, ctx, lst):
                 return True
         return False
 
-    message = await self.bot.wait_for('message', check=check, timeout=10)
+    message = await self.bot.wait_for('message', check=check, timeout=60)
     return message.content.upper()
 
 
@@ -128,7 +128,7 @@ async def check_length(self, ctx, max_len):
                 return True
         return False
 
-    message = await self.bot.wait_for('message', check=check, timeout=10)
+    message = await self.bot.wait_for('message', check=check, timeout=60)
     return message.content
 
 
@@ -137,7 +137,7 @@ async def check_author(self, ctx):
         return m.author == ctx.author and m.channel == ctx.channel
 
     try:
-        message = await self.bot.wait_for('message', check=check, timeout=30)
+        message = await self.bot.wait_for('message', check=check, timeout=60)
     except asyncio.TimeoutError:
         await ctx.send('Card creation: timed out')
         return False
@@ -170,8 +170,10 @@ async def house_input(self, ctx):
 
 
 async def flavor_input(self, ctx):
-    await ctx.send(f'Enter the flavor text ({MAX_FLAVOR_LENGTH} character limit):')
-    return await check_length(self, ctx, MAX_FLAVOR_LENGTH)
+    await ctx.send(f'Enter the flavor text:')
+    message = await check_author(self, ctx)
+    return message.content
+# TODO: add a proper check to the flavor to keep it in the box
 
 
 async def stats_input(self, ctx, rarity):

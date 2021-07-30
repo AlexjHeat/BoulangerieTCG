@@ -6,14 +6,13 @@ import random
 
 
 def pick_stat(stats):
-    rand = random.randint(1, sum(stats))
-    marker = stats[0]
-    if rand <= marker:
+    rand = random.randint(1, sum(stats)**2)
+    if rand <= stats[0]**2:
         return 0
-    marker += stats[1]
-    if rand <= marker:
+    if rand <= stats[1]**2:
         return 1
     return 2
+    # Make pick_stats() a bit more biased towards picking the higher stats
 
 
 def populate_stats(session, stats, card_id):
@@ -25,7 +24,8 @@ def populate_stats(session, stats, card_id):
         rarity = 3
     else:
         return False
-    q_level = session.query(CardLevel).filter(CardLevel.card_id == card_id, CardLevel.level == 1).first()
+
+    q_level = session.query(CardLevel).filter(CardLevel.card_id == card_id, CardLevel.level == 1).one()
     q_level.post = stats[0]
     q_level.lurk = stats[1]
     q_level.react = stats[2]
@@ -39,7 +39,9 @@ def populate_stats(session, stats, card_id):
             stats[i] += 1
             increment[i] += 1
 
-        q_level = session.query(CardLevel).filter(CardLevel.card_id == card_id, CardLevel.level == lvl).first()
+        q_level = session.query(CardLevel).filter(CardLevel.card_id == card_id, CardLevel.level == lvl).one()
         q_level.post = stats[0]
         q_level.lurk = stats[1]
         q_level.react = stats[2]
+
+

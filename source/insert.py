@@ -13,10 +13,13 @@ session = Session()
 
 session.add(Set(prefix="LB", name="La Boulangerie", total_cards=4))
 
-session.add(Card(id="LB1", prefix="LB", title="Kitch's revenge", house="Burgundy", rarity="Rare"))
-session.add(Card(id="LB2", prefix="LB", title="shiba", house="Provence", rarity="Standard"))
-session.add(Card(id="LB3", prefix="LB", title="toortle", house="Lyonnais", rarity="Rare"))
-session.add(Card(id="LB4", prefix="LB", title="pepsi", house="Auvergne", rarity="Legendary"))
+session.add(Card(id="LB1", prefix="LB", title="Kitch's revenge", house="burgundy", rarity="rare", flavor="You yanks 'ave it comin I swear on me mum I do"))
+session.add(Card(id="LB2", prefix="LB", title="shiba", house="provence", rarity="standard", flavor="half dog, half mascot"))
+session.add(Card(id="LB3", prefix="LB", title="toortle", house="lyonnais", rarity="rare", flavor="ye"))
+
+test = Card(id="LB4", prefix="LB", title="pepsi", house="auvergne", rarity="legendary", flavor="drink piss")
+test.flavor = 'no really, drink piss'
+session.add(test)
 
 session.commit()
 session.close()
