@@ -21,7 +21,7 @@ class RarityEnum(enum.Enum):
 class Card(Base):
     __tablename__ = 'cards'
     id = Column(String, primary_key=True)
-    prefix = Column(String, ForeignKey('sets.prefix'))
+    prefix = Column(String, ForeignKey('sets.prefix', ondelete="CASCADE"))
     title = Column(String)
     house = Column(Enum(HouseEnum))
     rarity = Column(Enum(RarityEnum))

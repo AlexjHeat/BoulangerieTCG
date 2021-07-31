@@ -51,7 +51,7 @@ async def create_card(self, session, ctx, my_card):
         session.commit()
 
 
-class CollectionAdd(commands.Cog):
+class EditCards(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -179,8 +179,11 @@ class CollectionAdd(commands.Cog):
                 return
 
         session.commit()
+        q_level = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == 1).one_or_none()
+        file = discord.File(q_level.artPath)
+        await ctx.send(file=file)
         await ctx.send(f'**{my_card.title}** has been edited.')
 
 
 def setup(bot):
-    bot.add_cog(CollectionAdd(bot))
+    bot.add_cog(EditCards(bot))

@@ -7,6 +7,7 @@ class User(Base):
     id = Column(String, primary_key=True)
     wins = Column(Integer)
     losses = Column(Integer)
+    days_since_lgnd = Column(Integer)
     pull_available = Column(Boolean)
     deck_private = Column(Boolean)
 

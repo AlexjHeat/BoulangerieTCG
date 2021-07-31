@@ -89,7 +89,7 @@ async def accept_card(self, session, ctx, my_card):
                 embed.insert_field_at(5, name="Flavor text", value=my_card.flavor, inline=True)
 
             elif res_text == 'Stats':
-                stats = await stats_input(self, ctx, my_card.rarity)
+                stats = await stats_input(self, ctx, my_card.rarity.name)
                 populate_stats(session, stats, my_card.id)
                 stats = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == 1).first()
                 embed.remove_field(4)

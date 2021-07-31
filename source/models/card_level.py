@@ -4,7 +4,7 @@ from source.db import Base
 
 class CardLevel(Base):
     __tablename__ = 'card_levels'
-    card_id = Column(String, ForeignKey('cards.id'), primary_key=True)
+    card_id = Column(String, ForeignKey('cards.id', ondelete="CASCADE"), primary_key=True)
     level = Column(Integer, primary_key=True)
     post = Column(Integer)
     lurk = Column(Integer)
