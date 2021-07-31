@@ -12,7 +12,7 @@ def pick_stat(stats):
     if rand <= stats[1]**2:
         return 1
     return 2
-    # Make pick_stats() a bit more biased towards picking the higher stats
+    # TODO: Make pick_stats() a bit more biased towards picking the higher stats
 
 
 def populate_stats(session, stats, card_id):

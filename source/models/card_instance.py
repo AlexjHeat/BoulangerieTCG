@@ -7,7 +7,7 @@ class CardInstance(Base):
     __tablename__ = 'card_instances'
     user_id = Column(String, ForeignKey('users.id', ondelete="CASCADE"), primary_key=True)
     card_id = Column(String, ForeignKey('cards.id', ondelete="CASCADE"), primary_key=True)
-    fragments = Column(Integer)
+    quantity = Column(Integer)
     level = Column(Integer)
     active = Column(Boolean)
 
