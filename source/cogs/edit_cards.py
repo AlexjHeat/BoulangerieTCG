@@ -11,7 +11,7 @@ from source.models.set import Set
 from source.models.card_level import CardLevel
 
 
-
+# TODO: enable .gif cards by parsing file extension on input, maybe just for level 5+
 async def create_card(self, session, ctx, my_card):
     try:
         session.add(my_card)
@@ -36,42 +36,42 @@ async def create_card(self, session, ctx, my_card):
                 session.rollback()
                 return False
 
-    except exc.SQLAlchemyError as e:
-        print(type(e))
-        print('edit_cards.create_card(): database error, command terminated')
-        await ctx.send("Error encountered with database, command terminated")
-
     except asyncio.TimeoutError as e:
         session.rollback()
         print(type(e))
         print('edit_cards.create_card(): encountered Timeout error, function terminated')
         await ctx.send("Card creation: timed out")
-        return
+        return False
     else:
-        # If there were no exceptions, then the session is finally committed
-        session.commit()
+        # If there were no exceptions, then the session is finally committed and a confirmation message sent
+        q_level = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == 1).one_or_none()
+        file = discord.File(q_level.artPath)
+        await ctx.send(file=file)
         await ctx.send(f'**{my_card.title}** has been created!')
+        session.commit()
 
 
 class CollectionAdd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def AddUser(self, ctx):
+    @commands.command(aliases=['usercard', 'ucard'])
+    @commands.max_concurrency(1)
+    @commands.has_role(ROLE_PERM)
+    async def UserCard(self, ctx):
         command = f"```{COMMAND_PREFIX}AddUser @user```"
         session = Session()
 
-        try:
-            # Ensures that a user was mentioned in the command and gets it
-            if len(ctx.message.mentions) == 0:
-                await ctx.send('No user mentioned.\n' + command)
-                return
-            user = ctx.message.mentions[0]
+        # Ensures that a user was mentioned in the command and gets it
+        if len(ctx.message.mentions) == 0:
+            await ctx.send('No user mentioned.\n' + command)
+            return
+        user = ctx.message.mentions[0]
 
+        try:
             # Gets the set information for the id, and creates the Card object
             prefix = await set_input(self, session, ctx)
-            my_set = session.query(Set).filter(Set.prefix == prefix).first()
+            my_set = session.query(Set).filter(Set.prefix == prefix).one_or_none()
             my_set.total_cards += 1
 
             card_id = my_set.prefix + str(my_set.total_cards)
@@ -94,11 +94,6 @@ class CollectionAdd(commands.Cog):
             if await create_card(self, session, ctx, my_card) is False:
                 return
 
-        except exc.SQLAlchemyError as e:
-            print(type(e))
-            print('edit_cards.AddCustom(): database error, command terminated')
-            await ctx.send("Error encountered with database, command terminated")
-
         except asyncio.TimeoutError as e:
             session.rollback()
             print(type(e))
@@ -107,13 +102,15 @@ class CollectionAdd(commands.Cog):
             return False
 
 
-    @commands.command()
-    async def AddCustom(self, ctx):
+    @commands.command(aliases=['customcard', 'ccard'])
+    @commands.max_concurrency(1)
+    @commands.has_role(ROLE_PERM)
+    async def CustomCard(self, ctx):
         session = Session()
         try:
             # Gets the set information for the id, and creates the Card object
             prefix = await set_input(self, session, ctx)
-            my_set = session.query(Set).filter(Set.prefix == prefix).first()
+            my_set = session.query(Set).filter(Set.prefix == prefix).one_or_none()
             my_set.total_cards += 1
 
             card_id = my_set.prefix + str(my_set.total_cards)
@@ -124,12 +121,6 @@ class CollectionAdd(commands.Cog):
 
             # Send to
             await create_card(self, session, ctx, my_card)
-
-        except exc.SQLAlchemyError as e:
-            print(type(e))
-            print('edit_cards.AddCustom(): database error, command terminated')
-            await ctx.send("Error encountered with database, command terminated")
-            return
 
         except asyncio.TimeoutError as e:
             session.rollback()
@@ -160,8 +151,9 @@ class CollectionAdd(commands.Cog):
         session.commit()
         session.close()
 
-
-    @commands.command()
+    @commands.command(aliases=['editcard', 'edit'])
+    @commands.max_concurrency(1)
+    @commands.has_role(ROLE_PERM)
     async def EditCard(self, ctx, card):
         command = f"```{COMMAND_PREFIX}EditCard [card ID/title]```"
         session = Session()

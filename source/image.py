@@ -90,6 +90,7 @@ def create_image(session, my_card, level):
             im_template = add_stats(im_template, q_level.post, q_level.lurk, q_level.react)
 
         im_template.save(f'./media/cards/{my_card.id}_{level}.png')
+        q_level.artPath = f'./media/cards/{my_card.id}_{level}.png'
     except FileNotFoundError as e:
         print(type(e))
         print(f'File path does not exist for opening/saving during creation of {my_card.id}-{level}')

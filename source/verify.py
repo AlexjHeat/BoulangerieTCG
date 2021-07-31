@@ -44,7 +44,7 @@ async def verify_level(ctx, level):
 
 
 async def verify_set(session, ctx, set):
-    q = session.query(Card).filter(Set.prefix == set.upper())
+    q = session.query(Card).filter(Set.prefix == set.upper()).one_or_none()
     if not session.query(q.exists()).scalar():
         await ctx.send(f'SET ERROR: **{set.upper()}** does not exist.')
         return False

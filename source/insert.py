@@ -11,7 +11,7 @@ Base.metadata.create_all(engine)
 
 session = Session()
 
-session.add(Set(prefix="LB", name="La Boulangerie", total_cards=4))
+session.add(Set(prefix="LB", name="La Boulangerie", total_cards=4, boosted=False))
 
 session.add(Card(id="LB1", prefix="LB", title="Kitch's revenge", house="burgundy", rarity="rare", flavor="You yanks 'ave it comin I swear on me mum I do"))
 session.add(Card(id="LB2", prefix="LB", title="shiba", house="provence", rarity="standard", flavor="half dog, half mascot"))
