@@ -1,9 +1,5 @@
-import timeit
-
 from PIL import Image, ImageDraw, ImageFont
-from source.db import Session
 from source.config import COLOR_STR
-from source.models.card import Card, HouseEnum
 from source.models.card_level import CardLevel
 import textwrap
 

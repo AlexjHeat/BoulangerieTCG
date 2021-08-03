@@ -1,38 +1,46 @@
 from sqlalchemy import func
-from source import config
-from source.models.card import Card, HouseEnum, RarityEnum
+from source.models.card import Card
 from source.models.set import Set
+from source.models.user import User
 
 
-def verify_card(session, card):
-    card = card.upper()
-    q_id = session.query(Card).filter(func.upper(Card.id) == card).one()
-    q_title = session.query(Card).filter(func.upper(Card.title) == card).first()
-    if q_id is not None:
-        return q_id.id
-    if q_title is not None:
-        return q_title.id
+def get_user(session, user_id):
+    my_user = session.query(User).filter(User.id == user_id).one_or_none()
+    if my_user is None:
+        my_user = User(id=user_id, wins=0, losses=0, days_since_legend=0, pull_available=True, deck_private=False)
+        session.add(my_user)
+    return my_user
+
+
+async def verify_card(session, ctx, card, command=None):
+    q = session.query(Card).filter(Card.id == card.upper()).one_or_none()
+    if q is None:
+        q = session.query(Card).filter(func.upper(Card.title) == card.upper()).one_or_none()
+    if q is None:
+        await ctx.send(f'CARD ERROR: **{card}** does not exist.\n')
+        if command:
+            await ctx.send(command)
+        return False
+    return q
+
+
+async def verify_mentioned(ctx, command=None):
+    if len(ctx.message.mentions) == 1:
+        return ctx.message.mentions[0]
+    await ctx.send(f'USER ERROR: Must @user\n')
+    if command:
+        await ctx.send(command)
     return False
 
 
-async def verify_card_title(ctx, card_title):
-    if len(card_title) > config.MAX_TITLE_LENGTH:
-        await ctx.send(f'TITLE ERROR: Title must be less than {config.MAX_TITLE_LENGTH}')
+async def verify_set(session, ctx, prefix, command=None):
+    q = session.query(Set).filter(Set.prefix == prefix.upper()).one_or_none()
+    if q is None:
+        await ctx.send(f'SET ERROR: **{prefix.upper()}** does not exist.')
+        if command:
+            await ctx.send(command)
         return False
-
-
-async def verify_rarity(ctx, rarity):
-    rarity_values = set(item.value for item in RarityEnum)
-    if rarity.upper() not in rarity_values:
-        await ctx.send(f'RARITY ERROR: **{rarity}** is not in the list {rarity_values}')
-        return False
-
-
-async def verify_type(ctx, type):
-    type_values = set(item.value for item in HouseEnum)
-    if type.upper() not in type_values:
-        await ctx.send(f'RARITY ERROR: **{type}** is not in the list {type_values}')
-        return False
+    return q
 
 
 async def verify_level(ctx, level):
@@ -43,11 +51,7 @@ async def verify_level(ctx, level):
     return False
 
 
-async def verify_set(session, ctx, set):
-    q = session.query(Card).filter(Set.prefix == set.upper()).one_or_none()
-    if not session.query(q.exists()).scalar():
-        await ctx.send(f'SET ERROR: **{set.upper()}** does not exist.')
-        return False
+
 
 
 

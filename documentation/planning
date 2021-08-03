@@ -19,53 +19,46 @@ Rolling/Random mechanic ideas:
 
 
 
-~~~Admin Commands~~~
-*AddFragment @user [card name/id] [amount]: Adds fragments to the user, only accepts positive values
-*RemoveFragment @user [card name/id] [amount]: Removes fragments to the user, only accepts positive values, checks to
+~~~Commands~~~
+Edit_Decks
+*(admin)AddFragment(add) @user [card name/id] [amount]: Adds fragments to the user, only accepts positive values
+*(admin)RemoveFragment(rem) @user [card name/id] [amount]: Removes fragments to the user, only accepts positive values, checks to
     make sure they have enough
-*SetLevel @user [card name/id] [level] : Accepts values between 0 and 7.  0 Erases their ownership of the card
+*(admin)SetLevel(lvl) @user [card name/id] [level] : Accepts values between 0 and 7.  0 Erases their ownership of the card
+*Destroy [card name/id]: Gives back x amount of fragments, losing some to tax, makes user accept via button
+*Upgrade(u) [card name/id]
 
-*CollectionSet[Set Name] : changes the set.  If the set name does not exist, user must press button to confirm creating
-    a new set.
-*CollectionAddUser @user [rarity] [post,lurk,react] "flavor" : Adds card to collection of current set, automatically
+Edit_Cards
+*(admin)UserCard(user) @user [rarity] [post,lurk,react] "flavor" : Adds card to collection of current set, automatically
     grabbing user's pfp.  Posts embed if successful.
-*CollectionAddCustom "name" [rarity] [post,lurk,react] "flavor" : message must be sent with an uploaded image.  Creates
+*(admin)CustomCard(custom) "name" [rarity] [post,lurk,react] "flavor" : message must be sent with an uploaded image.  Creates
     and adds card to collection of current set.  Posts embed if successful.
-*CollectionRemove [card name/id] : Gives warning and asks for extra, secure confirmation.  Then goes and deletes card
+*(admin)RemoveCard [card name/id] : Gives warning and asks for extra, secure confirmation.  Then goes and deletes card
     from every players collection.
-
-*FreePull @user : gives them a free pack, what else
-
-*EditName
-*EditArt
-*EditFlavor
-*EditStats
-
-*Stats : returns values of how many days with current set stats it would take to fully upgrade each rarity
-*StatsBoost [setName] [%] : Alters the % of pulls any given collection gets.  Can only boost 1 set at a time
-*StatsBoostReset : Resets collection boosts if possible
-*StatsSettings : Walks through menu allowing to change certain data
-    *Cards per pull (default = 3):
-    *Average days for Rare(default = 2):
-    *Average days for Legendary(default = 8):
-    *Then runs Stats of new settings
+*(admin)EditCard(edit) [card name/id] : Allows editing of any current cards, makes new images
 
 
+Edit_Sets
+*(Admin)AddSet [Set Prefix] [Set Name] : Adds a new set to database
+*(Admin)RemoveSet [Set Prefix] : Removes a set from database, but only if no cards are in it.
+*(Admin)Boost [Set Prefix] : Boosts a set such that there is a >50% chance the card is from such set
 
-~~~User Commands~~~
+Pull
 *Pull(p) : checks if user has used their pull for the day, if not, briefly displays slot machine gif than delivers 3 cards
+*(Admin)FreePull(freep) @user : gives them a free pack, what else
 
+Trade
 *Trade(t) @user : Post embed message to act as trade block.  Use (+/-)[card name/id] to add/remove items from the trade
     block.  Both users must hit separate buttons to accept trade.  If any item is removed/added from trade block,
     buttons reset color
 
+Duel
 *Duel(d) @user : Post embed message that displays graphic and confirms duel.  Users must both hit separate buttons to
     confirm.  Changes color when button is hit by user.
-
 *Activate(a) [card name/id, card name/id, card name/id] : Works for 1 - 3 cards, checks if they're all the same house
 
+View
 *View(v) [card name/id] [level]: Displays card image as embed.
-
 *Deck @user : Displays deck of player.  If no user is supplied, displays own deck
     TODO: Figure out how~!
         - No images, just scrollable text stats in chat

@@ -1,6 +1,7 @@
 from discord.ext import commands
 from source.db import Session
 from source.config import COMMAND_PREFIX, ROLE_PERM
+from source.verify import verify_set
 from source.models.set import Set
 
 
@@ -18,9 +19,9 @@ class EditSets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases= ['addset'])
+    @commands.command(name='AddSet', aliases= ['addset'])
     @commands.has_role(ROLE_PERM)
-    async def AddSet(self, ctx, prefix, name):
+    async def add_set(self, ctx, prefix, name):
         command = f"```{COMMAND_PREFIX}addset [set id] [set name]```"
         session = Session()
 
@@ -31,28 +32,27 @@ class EditSets(commands.Cog):
         await ctx.send(f'**{prefix.upper()}: {name}** has been created.')
         session.commit()
 
-
-    @commands.command(aliases= ['removeset'])
+    @commands.command(name='RemoveSet', aliases= ['removeset'])
     @commands.has_role(ROLE_PERM)
-    async def RemoveSet(self, ctx, prefix):
+    async def remove_set(self, ctx, prefix):
         command = f"```{COMMAND_PREFIX}removeset [set id]```"
         session = Session()
 
-        q_set = session.query(Set).filter(Set.prefix == prefix.upper()).one_or_none()
-        if q_set is None:
-            await ctx.send(f'SET: **{prefix}** does not exist.\n' + command)
+        my_set = await verify_set(session, ctx, prefix, command)
+        if my_set is False:
+            session.rollback()
             return
 
-        if q_set.total_cards > 0:
-            await ctx.send(f'Removing this set must be done manually, as it will delete {q_set.total_cards} cards.')
+        if my_set.total_cards > 0:
+            await ctx.send(f'Removing this set must be done manually, as it will delete {my_set.total_cards} cards.')
+            session.rollback()
             return
 
-        session.delete(q_set)
+        session.delete(my_set)
         session.commit()
-        await ctx.send(f'**{q_set.prefix}: {q_set.name}** has been deleted.')
+        await ctx.send(f'**{my_set.prefix}: {my_set.name}** has been deleted.')
 
-
-    @commands.command()
+    @commands.command(name='boost', aliases= ['BOOST'])
     @commands.has_role(ROLE_PERM)
     async def boost(self, ctx, prefix):
         command = f"```{COMMAND_PREFIX}boost [set id]```"
@@ -64,15 +64,15 @@ class EditSets(commands.Cog):
             await ctx.send('All set boosts canceled, normal drop rates resumed.')
             return
 
-        q_set = session.query(Set).filter(Set.prefix == prefix.upper()).one_or_none()
-        if q_set is None:
-            await ctx.send(f'SET: **{prefix}** does not exist.\n' + command)
+        my_set = await verify_set(session, ctx, prefix, command)
+        if my_set is False:
+            session.rollback()
             return
 
         clear_boost(session)
-        q_set.boosted = True
+        my_set.boosted = True
         session.commit()
-        await ctx.send(f'**{q_set.prefix}: {q_set.name}** is now boosted.  Each pull will now have a 50% chance '
+        await ctx.send(f'**{my_set.prefix}: {my_set.name}** is now boosted.  Each pull will now have a 50% chance '
                        f'of being from this set.')
 
 def setup(bot):

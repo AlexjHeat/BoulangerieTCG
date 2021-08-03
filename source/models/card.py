@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, Column, String, Enum
 from sqlalchemy.orm import relationship
 from source.db import Base
-from source.models import card_instance, card_level, set
+
 import enum
 
 class HouseEnum(enum.Enum):

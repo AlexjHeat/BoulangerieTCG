@@ -1,14 +1,116 @@
-import sqlalchemy.exc
+import discord
 from discord.ext import commands
-from sqlalchemy import exc
+from discord_components import *
 from source.db import Session
+from source.config import COLOR_HEX, ROLE_PERM, COMMAND_PREFIX
 from source.stats import populate_stats
 from source.image import create_image
 from source.input import *
-from source.verify import verify_card
+from source.verify import verify_card, verify_mentioned
 from source.models.card import Card
 from source.models.set import Set
 from source.models.card_level import CardLevel
+import asyncio
+
+
+async def get_button_response(self, ctx):
+    def check(b):
+        return b.author == ctx.author and b.channel == ctx.channel
+
+    button = await self.bot.wait_for("button_click", check=check, timeout=180)
+    return button
+
+
+async def accept_card(self, session, ctx, my_card):
+
+    buttons_approve = [[Button(style=ButtonStyle.green, label="Accept"),
+                        Button(style=ButtonStyle.blue, label="Edit"),
+                        Button(style=ButtonStyle.red, label="Cancel")]]
+    buttons_edit = [[Button(style=ButtonStyle.blue, label="Title"),
+                     Button(style=ButtonStyle.blue, label="House"),
+                     Button(style=ButtonStyle.blue, label="Flavor")],
+                    [Button(style=ButtonStyle.blue, label="Stats"),
+                     Button(style=ButtonStyle.blue, label="Art")]]
+
+    embed = discord.Embed(
+        title=my_card.id,
+        color=COLOR_HEX[my_card.house.name]
+    )
+    my_set = session.query(Set).filter(Set.prefix == my_card.prefix).first()
+    embed.set_thumbnail(url='attachment://image.png')
+    embed.add_field(name='Card Title', value=my_card.title, inline=False)
+    embed.add_field(name='Set', value=my_set.name, inline=False)
+    embed.add_field(name='House', value=my_card.house.name, inline=True)
+    embed.add_field(name='Rarity', value=my_card.rarity.name, inline=True)
+
+    stats = session.query(CardLevel).filter(CardLevel.card_id == my_card.id).first()
+    embed.add_field(name='Post - Lurk - React',
+                    value=str(stats.post) + " - " + str(stats.lurk) + " - " + str(stats.react), inline=False)
+    embed.add_field(name='Flavor text', value=my_card.flavor, inline=False)
+
+    while True:
+        try:
+            file = discord.File(my_card.artPath, filename='image.png')
+        except FileNotFoundError as e:
+            print(type(e))
+            print('input.accept_card(): ' + my_card.artPath + ' cannot be found.')
+            await ctx.send(my_card.artPath + ' cannot be found.')
+            return False
+
+        m = await ctx.send(file=file,
+                           embed=embed,
+                           components=buttons_approve)
+
+        res = await get_button_response(self, ctx)
+        await res.respond(type=6)
+        res_text = res.component.label
+
+        if res_text == 'Accept':
+            await m.edit(components=[])
+            return True
+        elif res_text == 'Cancel':
+            await m.edit(components=[])
+            return False
+
+        await m.edit(components=buttons_edit)
+        res = await get_button_response(self, ctx)
+        await res.respond(type=6)
+        res_text = res.component.label
+
+        try:
+            if res_text == 'Title':
+                my_card.title = await title_input(self, ctx)
+                embed.remove_field(0)
+                embed.insert_field_at(0, name="Card Title", value=my_card.title, inline=False)
+
+            elif res_text == 'House':
+                my_card.house = await house_input(self, ctx)
+                embed.remove_field(2)
+                embed.insert_field_at(2, name="House", value=my_card.house.name, inline=True)
+
+            elif res_text == 'Flavor':
+                my_card.flavor = await flavor_input(self, ctx)
+                embed.remove_field(5)
+                embed.insert_field_at(5, name="Flavor text", value=my_card.flavor, inline=True)
+
+            elif res_text == 'Stats':
+                stats = await stats_input(self, ctx, my_card.rarity.name)
+                populate_stats(session, stats, my_card.id)
+                stats = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == 1).first()
+                embed.remove_field(4)
+                embed.insert_field_at(4, name='Post - Lurk - React',
+                                      value=str(stats.post) + " - " + str(stats.lurk) + " - " + str(stats.react),
+                                      inline=False)
+
+            elif res_text == 'Art':
+                image = await image_input(self, ctx)
+                filename = './media/card_art/' + my_card.id + '_art.png'
+                await image.save(filename)
+
+        except asyncio.TimeoutError as e:
+            print(e)
+            print('input.accept_card() editing timed out')
+        await m.delete()
 
 
 # TODO: enable .gif cards by parsing file extension on input, maybe just for level 5+
@@ -55,18 +157,18 @@ class EditCards(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['usercard', 'ucard'])
+    @commands.command(name='UserCard', aliases=['usercard', 'user', 'USERCARD'])
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
-    async def UserCard(self, ctx):
-        command = f"```{COMMAND_PREFIX}AddUser @user```"
+    async def user_card(self, ctx):
+        command = f"```{COMMAND_PREFIX}user @user```"
         session = Session()
 
         # Ensures that a user was mentioned in the command and gets it
-        if len(ctx.message.mentions) == 0:
-            await ctx.send('No user mentioned.\n' + command)
-            return
-        user = ctx.message.mentions[0]
+        user = await verify_mentioned(ctx, command=command)
+        if user is None:
+            session.rollback
+            return False
 
         try:
             # Gets the set information for the id, and creates the Card object
@@ -78,10 +180,8 @@ class EditCards(commands.Cog):
             my_card = Card(id=card_id, prefix=prefix)
 
             # Gets the username and pfp to add to the Card object
-            title = user.nick
-            if title is None:
-                title = user.name
-            my_card.title = title[:MAX_TITLE_LENGTH]
+            print(user.nick)
+            my_card.title = user.display_name[:MAX_TITLE_LENGTH]
 
             filename = './media/card_art/' + my_card.id + '_art.png'
             await user.avatar_url.save(filename)
@@ -102,10 +202,10 @@ class EditCards(commands.Cog):
             return False
 
 
-    @commands.command(aliases=['customcard', 'ccard'])
+    @commands.command(name= 'CustomCard', aliases=['customcard', 'custom', 'CUSTOMCARD'])
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
-    async def CustomCard(self, ctx):
+    async def custom_card(self, ctx):
         session = Session()
         try:
             # Gets the set information for the id, and creates the Card object
@@ -129,17 +229,16 @@ class EditCards(commands.Cog):
             await ctx.send("Card creation: timed out")
             return
 
-
-
-    @commands.command()
-    async def RemoveCard(self, ctx, card):
+    @commands.command(name='RemoveCard', aliases=['removecard', 'REMOVECARD'])
+    @commands.has_role(ROLE_PERM)
+    async def remove_card(self, ctx, card):
         command = f"```{COMMAND_PREFIX}RemoveCard [card ID/title]```"
         session = Session()
 
         # Verify that the command argument is correct, and get the proper card_id string
-        card_id = verify_card(session, card)
-        if card_id is False:
-            await ctx.send(f'CARD ERROR: **{card}** does not exist.\n{command}')
+        my_card = await verify_card(session, card)
+        if my_card is False:
+            session.rollback()
             return
 
         # TODO: Implement RemoveCard command
@@ -151,20 +250,18 @@ class EditCards(commands.Cog):
         session.commit()
         session.close()
 
-    @commands.command(aliases=['editcard', 'edit'])
+    @commands.command(name='EditCard', aliases=['editcard', 'edit', 'EDITCARD'])
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
-    async def EditCard(self, ctx, card):
+    async def edit_card(self, ctx, card):
         command = f"```{COMMAND_PREFIX}EditCard [card ID/title]```"
         session = Session()
 
-        # Verify that the command argument is correct, and get the proper card_id string
-        card_id = verify_card(session, card)
-        if card_id is False:
-            await ctx.send(f'CARD ERROR: **{card}** does not exist.\n{command}')
+        # Get the card
+        my_card = await verify_card(session, ctx, card, command)
+        if my_card is False:
+            session.rollback()
             return
-        # Retrieve Card object
-        my_card = session.query(Card).filter(Card.id == card_id).one()
 
         # Give the user the accept_card() menu to cancel, make edits, and accept the edits
         if await accept_card(self, session, ctx, my_card) is False:
