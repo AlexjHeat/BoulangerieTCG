@@ -10,7 +10,6 @@ async def check_list(self, ctx, lst):
             if m.content.upper() in lst:
                 return True
         return False
-
     message = await self.bot.wait_for('message', check=check, timeout=60)
     return message.content.upper()
 
@@ -45,16 +44,18 @@ async def set_input(self, session, ctx):
 
 
 async def rarity_input(self, ctx):
-    rarity_list = [item.value for item in RarityEnum]
-    await ctx.send(f'Enter one of the following rarities {rarity_list}:')
-    rarity = await check_list(self, ctx, rarity_list)
+    rarity_list_key = [f'{item.value}' for item in RarityEnum]
+    rarity_list = [f'{item.value}: {item.name}' for item in RarityEnum]
+    await ctx.send(f"Enter one of the following rarity numbers\n{rarity_list}:")
+    rarity = int(await check_list(self, ctx, rarity_list_key))
     return RarityEnum(rarity)
 
 
 async def house_input(self, ctx):
-    house_list = [item.value for item in HouseEnum]
-    await ctx.send(f'Enter one of the following houses {house_list}:')
-    house = await check_list(self, ctx, house_list)
+    house_list_key= [f'{item.value}' for item in HouseEnum]
+    house_list = [f'{item.value}: {item.name}' for item in HouseEnum]
+    await ctx.send(f"Enter a house's corresponding number {house_list}:")
+    house = int(await check_list(self, ctx, house_list_key))
     return HouseEnum(house)
 
 

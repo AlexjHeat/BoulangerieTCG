@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands, tasks
+import discord.errors
+from discord_components import *
 from source.db import Session
 from source.config import PULLS_PER_DAY, COMMAND_PREFIX, RARITY_CHANCE
 from source.verify import verify_mentioned, get_user
@@ -8,6 +10,8 @@ from source.models.set import Set
 from source.models.card import Card
 from datetime import datetime
 import random
+import asyncio
+import threading
 
 
 def roll(session, legendary_mult):
@@ -31,54 +35,85 @@ def roll(session, legendary_mult):
         if card_list is None:
             card_list = session.query(Card).filter(Card.rarity == rarity).all()
 
-    #returns random item from card list
     return random.choice(card_list)
 
 
-
-async def pull_cards(ctx, user_id, checkPull=False, count=PULLS_PER_DAY):
+async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
     session = Session()
 
     # check if User object exists, and create one if not
     my_user = get_user(session, user_id)
 
     # checks if user has a pull available if necessary
-    if checkPull:
+    if check_pull:
         if my_user.pull_available is False:
             await ctx.send(f'No pull available, resets at 0:00 GMT')
             return False
         my_user.pull_available = False
 
-    # TODO send a different slot machine gif depending on rarities pulled
-    # send a slot machine gif
-    slot_file = discord.File('./media/images/slotmachine.gif')
-    await ctx.send("message message", file=slot_file)
-
-    # get a list of randomized cards to be added
+    # get a list of randomized cards to be added, and highest rarity
     card_list = []
+    rarity = 1
     for _ in range(count):
         while True:
             card = roll(session, my_user.days_since_legend)
             if card not in card_list:
                 card_list.append(card)
                 break
+        if card.rarity.value > rarity:
+            rarity = card.rarity.value
         if card.rarity.name == 'legendary':
             my_user.days_since_legend = 0
 
-    # Updates the CardInstance table, and creates new rows if necessary
-    for c in card_list:
-        my_user.add_to_collection(session, c.id)
+    # Updates the CardInstance table, and post the card name and rarity for the user
+    slot_file = discord.File(f'./media/images/slotmachine_{rarity}.gif')
+    await ctx.send(file=slot_file)
 
-    # Post the card name and rarity for the user
-    # TODO: write algorithm that creates fragmented images of the level 1 cards, resize them to be smaller
+    # Create the list of buttons (1 per card), display the card names, update user's collection
+    buttons = [[]]
     for c in card_list:
-        if c.rarity.name == 'legendary':
-            await ctx.send(f'Pog, you found a :starsflux:**{c.title}**:starsflux: [{c.rarity.name}]!')
-        else:
-            await ctx.send(f'You found a **{c.title}** [{c.rarity.name}]!')
+        buttons[0].append(Button(style=ButtonStyle.blue, label=c.title))
+        my_user.add_to_deck(session, c.id, 1)
+        await ctx.send(f'You found a **{c.title}** [*{c.rarity.name}*]!')
 
-    # TODO: Button to view cards (only view one card at a time)
+    # Display the buttons, and the message which will be edited to hold images
     session.commit()
+    m_but = await ctx.send("\nClick to view card.", components=buttons)
+    m_img_exist = False
+
+    # TODO Better functionality with threading
+    x = threading.Thread()
+    x.start()
+    while True:
+        def check(b):
+            return ctx.author == b.author
+
+        try:
+            res = await self.bot.wait_for("button_click", timeout=30)
+        except asyncio.TimeoutError:
+            await m_but.edit(components=[])
+            return
+
+        try:
+            await res.respond(type=6)
+        except Exception as e:
+            await m_but.edit(components=[])
+            return
+
+        res_text = res.component.label
+        if m_img_exist:
+            await m_img.delete()
+
+        for i in range(len(card_list)):
+            if res_text == card_list[i].title:
+                buttons[0][i] = Button(style=ButtonStyle.green, label=card_list[i].title)
+                path = card_list[i].get_image_path(session, 1)
+                file = discord.File(path)
+                m_img = await ctx.send(file=file)
+            else:
+                buttons[0][i] = Button(style=ButtonStyle.blue, label=card_list[i].title)
+            m_img_exist = True
+        await m_but.edit(components=buttons)
 
 
 def refresh():
@@ -106,8 +141,7 @@ class Pull(commands.Cog):
     @commands.command(name='pull', aliases=['p', 'P', 'PULL', 'Pull'])
     async def pull(self, ctx):
         user_id = str(ctx.message.author.id)
-        await pull_cards(ctx, user_id, checkPull=True)
-
+        await pull_cards(self, ctx, user_id, check_pull=True)
 
     @commands.command(name="freepull", aliases=['freep', 'FREEPULL'])
     async def free_pull(self, ctx, quantity):
@@ -121,7 +155,8 @@ class Pull(commands.Cog):
         if mentioned_user is False:
             return
 
-        await pull_cards(ctx, str(mentioned_user.id), checkPull=False, count=int(quantity))
+        await pull_cards(self, ctx, str(mentioned_user.id), check_pull=False, count=int(quantity))
+
 
 def setup(bot):
     bot.add_cog(Pull(bot))

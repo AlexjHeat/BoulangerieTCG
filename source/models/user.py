@@ -14,32 +14,56 @@ class User(Base):
 
     card_instances = relationship("CardInstance", back_populates="user")
 
-
-    def add_to_collection(self, session, card_id, n=1):
+    def add_to_deck(self, session, card_id, n):
         q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
                                                CardInstance.card_id == card_id).one_or_none()
         if q is None:
-            session.add(CardInstance(user_id=self.id, card_id=card_id, level=1, quantity=0, active=False))
+            session.add(CardInstance(user_id=self.id, card_id=card_id, level=0, quantity=n, active=False))
         else:
             q.quantity += n
 
-
-    def remove_from_collection(self, session, card_id, n):
+    def remove_from_deck(self, session, card_id, n):
         q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
                                                CardInstance.card_id == card_id).one_or_none()
         if q is None:
             return False
-        else:
-            q.quantity -= n
+        q.quantity -= n
         if q.quantity < 0:
             q.quantity = 0
 
-    def check_collection(self, session, card_id, n):
+    def get_quantity(self, session, card_id):
         q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
                                                CardInstance.card_id == card_id).one_or_none()
         if q is None:
-            return False
-        if q.quantity < n:
-            return False
-        return True
+            return 0
+        return q.quantity
+
+    def get_level(self, session, card_id):
+        q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
+                                               CardInstance.card_id == card_id).one_or_none()
+        if q is None:
+            return 0
+        return q.level
+
+    def set_level(self, session, card_id, lvl):
+        q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
+                                               CardInstance.card_id == card_id).one_or_none()
+        if q is None:
+            q = CardInstance(user_id=self.id, card_id=card_id, quantity=0, level=lvl, active=False)
+            session.add(q)
+        else:
+            q.level = lvl
+
+    def fragments_from_destroy(self, session, card_id):
+        q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
+                                               CardInstance.card_id == card_id).one_or_none()
+        if q is None:
+            return 0
+        if q.level == 0:
+            return 0
+        n = 1
+        for x in range(q.level):
+            n += x
+        return n
+
 

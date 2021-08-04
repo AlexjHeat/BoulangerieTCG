@@ -95,7 +95,7 @@ async def accept_card(self, session, ctx, my_card):
 
             elif res_text == 'Stats':
                 stats = await stats_input(self, ctx, my_card.rarity.name)
-                populate_stats(session, stats, my_card.id)
+                populate_stats(session, stats, my_card)
                 stats = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == 1).first()
                 embed.remove_field(4)
                 embed.insert_field_at(4, name='Post - Lurk - React',
@@ -124,7 +124,7 @@ async def create_card(self, session, ctx, my_card):
 
         # Generate stats for each level and add them to the CardLevel objects
         my_stats = await stats_input(self, ctx, my_card.rarity.name)
-        populate_stats(session, my_stats, my_card.id)
+        populate_stats(session, my_stats, my_card)
 
         # Give the user the opportunity to edit or cancel the card
         if await accept_card(self, session, ctx, my_card) is False:
@@ -148,9 +148,9 @@ async def create_card(self, session, ctx, my_card):
         # If there were no exceptions, then the session is finally committed and a confirmation message sent
         q_level = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == 1).one_or_none()
         file = discord.File(q_level.artPath)
+        session.commit()
         await ctx.send(file=file)
         await ctx.send(f'**{my_card.title}** has been created!')
-        session.commit()
 
 
 class EditCards(commands.Cog):
@@ -166,7 +166,8 @@ class EditCards(commands.Cog):
 
         # Ensures that a user was mentioned in the command and gets it
         user = await verify_mentioned(ctx, command=command)
-        if user is None:
+        print(user)
+        if user is False:
             session.rollback
             return False
 
@@ -180,7 +181,6 @@ class EditCards(commands.Cog):
             my_card = Card(id=card_id, prefix=prefix)
 
             # Gets the username and pfp to add to the Card object
-            print(user.nick)
             my_card.title = user.display_name[:MAX_TITLE_LENGTH]
 
             filename = './media/card_art/' + my_card.id + '_art.png'
