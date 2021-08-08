@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
-from source.db import Base, Session
-from source.models import card
+from source.db import Base
+
 
 class Set(Base):
     __tablename__ = 'sets'

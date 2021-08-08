@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from source.db import Base
+from source.models.card import Card
+
 
 class CardLevel(Base):
     __tablename__ = 'card_levels'
@@ -12,3 +14,11 @@ class CardLevel(Base):
     artPath = Column(String)
 
     card = relationship("Card", back_populates="card_levels")
+
+    def get_title(self, session):
+        q = session.query(Card).filter(Card.id == self.card_id).one()
+        return q.title
+
+    def get_house(self, session):
+        q = session.query(Card).filter(Card.id == self.card_id).one()
+        return q.house.name

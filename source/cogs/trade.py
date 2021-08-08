@@ -82,7 +82,6 @@ class Trade(commands.Cog):
         command = f'```{COMMAND_PREFIX}t @user```'
         command_block = f'```+/- [card name/id] [quantity]```'
 
-
         # Get both users for the trade
         user1 = ctx.author
         user2 = await verify_mentioned(ctx, command)
@@ -93,6 +92,7 @@ class Trade(commands.Cog):
         trade_block = TradeBlock(user1, user2, command_block)
         session = Session()
 
+        # TODO error message after the embed instead of before.
         while True:
             m = await ctx.send(embed=trade_block.embed, components=trade_block.buttons)
 

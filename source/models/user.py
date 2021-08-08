@@ -2,6 +2,8 @@ from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
 from source.db import Base
 from source.models.card_instance import CardInstance
+from source.models.card_level import CardLevel
+from source.models.card import Card
 
 class User(Base):
     __tablename__ = 'users'
@@ -15,12 +17,19 @@ class User(Base):
     card_instances = relationship("CardInstance", back_populates="user")
 
     def add_to_deck(self, session, card_id, n):
+        if n < 0:
+            return
         q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
                                                CardInstance.card_id == card_id).one_or_none()
         if q is None:
-            session.add(CardInstance(user_id=self.id, card_id=card_id, level=0, quantity=n, active=False))
+            q = CardInstance(user_id=self.id, card_id=card_id, level=0, quantity=n, active=False)
+            session.add(CardInstance(q))
         else:
             q.quantity += n
+
+        if q.level == 0:
+            q.level += 1
+            q.quantity -= 1
 
     def remove_from_deck(self, session, card_id, n):
         q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
@@ -66,4 +75,25 @@ class User(Base):
             n += x
         return n
 
+    def clear_active(self, session):
+        active_list = session.query(CardInstance).filter(CardInstance.user_id == self.id, CardInstance.active).all()
+        for card in active_list:
+            card.active = False
 
+    def set_active(self, session, card_id):
+        card = session.query(CardInstance).filter(CardInstance.user_id == self.id,
+                                                  CardInstance.card_id == card_id).one_or_none()
+        if card is None:
+            return False
+        if card.level <= 0:
+            return False
+
+        card.active = True
+
+    def get_active(self, session):
+        active_list = session.query(CardInstance).filter(CardInstance.user_id == self.id, CardInstance.active).all()
+        level_list = []
+        for card in active_list:
+            level_list.append(session.query(CardLevel).filter(CardLevel.card_id == card.card_id,
+                                                              CardLevel.level == card.level).one())
+        return level_list

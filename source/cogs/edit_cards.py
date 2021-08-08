@@ -166,7 +166,6 @@ class EditCards(commands.Cog):
 
         # Ensures that a user was mentioned in the command and gets it
         user = await verify_mentioned(ctx, command=command)
-        print(user)
         if user is False:
             session.rollback
             return False

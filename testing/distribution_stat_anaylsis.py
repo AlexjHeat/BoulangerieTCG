@@ -7,11 +7,11 @@ pulls_per_day = 1
 card_per_pull = 5
 
 packs_per_rare = 1
-packs_per_legend = 7
+packs_per_legend = 5
 
 # Card Amount
-standard_amt = 40
-rare_amt = 16
+standard_amt = 24
+rare_amt = 12
 legendary_amt = 4
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

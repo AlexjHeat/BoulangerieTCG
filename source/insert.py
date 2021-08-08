@@ -5,12 +5,13 @@ from source.models.card_level import CardLevel
 from source.models.set import Set
 from source.db import Base, Session, engine
 
-
+print('Program start...')
 Base.metadata.drop_all(engine)
+print('Tables dropped')
 Base.metadata.create_all(engine)
-
+print('Tables created')
 session = Session()
-
+print('Beginning insertion session')
 session.add(Set(prefix="LB", name="La Boulangerie", total_cards=4, boosted=False))
 
 session.add(Card(id="LB1", prefix="LB", title="Kitch's revenge", house="burgundy", rarity="rare", flavor="You yanks 'ave it comin I swear on me mum I do"))
@@ -22,4 +23,4 @@ test.flavor = 'no really, drink piss'
 session.add(test)
 
 session.commit()
-session.close()
+print('Ending insertion session')

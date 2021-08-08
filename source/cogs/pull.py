@@ -8,6 +8,7 @@ from source.verify import verify_mentioned, get_user
 from source.models.user import User
 from source.models.set import Set
 from source.models.card import Card
+from source.models.card_level import CardLevel
 from datetime import datetime
 import random
 import asyncio
@@ -91,13 +92,13 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
         try:
             res = await self.bot.wait_for("button_click", timeout=30)
         except asyncio.TimeoutError:
-            await m_but.edit(components=[])
+            await m_but.delete()
             return
 
         try:
             await res.respond(type=6)
         except Exception as e:
-            await m_but.edit(components=[])
+            await m_but.delete()
             return
 
         res_text = res.component.label
@@ -107,8 +108,10 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
         for i in range(len(card_list)):
             if res_text == card_list[i].title:
                 buttons[0][i] = Button(style=ButtonStyle.green, label=card_list[i].title)
-                path = card_list[i].get_image_path(session, 1)
-                file = discord.File(path)
+                # TODO
+                q_level = session.query(CardLevel).filter(CardLevel.card_id == card_list[i].id,
+                                                          CardLevel.level == 1).one()
+                file = discord.File(q_level.artPath)
                 m_img = await ctx.send(file=file)
             else:
                 buttons[0][i] = Button(style=ButtonStyle.blue, label=card_list[i].title)
@@ -147,7 +150,7 @@ class Pull(commands.Cog):
     async def free_pull(self, ctx, quantity):
         command = f"```{COMMAND_PREFIX}freePull [quantity] @user```"
 
-        if not quantity.isdigit() or (int(quantity) < 0 or int(quantity) > 7):
+        if not quantity.isdigit() or (int(quantity) < 0 or int(quantity) > 5):
             await ctx.send('Quantity must be between 0 and 7.\n' + command)
             return
 
