@@ -1,3 +1,5 @@
 venv/
 media/cards
 media/card_art
+source/config.py
+source/insert.py
