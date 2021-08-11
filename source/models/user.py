@@ -23,7 +23,7 @@ class User(Base):
                                                CardInstance.card_id == card_id).one_or_none()
         if q is None:
             q = CardInstance(user_id=self.id, card_id=card_id, level=0, quantity=n, active=False)
-            session.add(CardInstance(q))
+            session.add(q)
         else:
             q.quantity += n
 

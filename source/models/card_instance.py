@@ -13,3 +13,10 @@ class CardInstance(Base):
 
     user = relationship("User", back_populates="card_instances")
     card = relationship("Card", back_populates="card_instances")
+
+    def __init__(self, user_id, card_id, quantity, level, active):
+        self.user_id = user_id
+        self.card_id = card_id
+        self.quantity = quantity
+        self.level = level
+        self.active = active

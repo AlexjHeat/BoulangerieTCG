@@ -12,7 +12,7 @@ def get_user(session, user_id):
     return my_user
 
 
-async def verify_card(session, ctx, card, command=None):
+async def get_card(session, ctx, card, command=None):
     q = session.query(Card).filter(Card.id == card.upper()).one_or_none()
     if q is None:
         q = session.query(Card).filter(func.upper(Card.title) == card.upper()).one_or_none()
@@ -46,7 +46,7 @@ async def verify_set(session, ctx, prefix, command=None):
 async def verify_level(ctx, level):
     if level.isdigit():
         if int(level) >= 0 and int(level) <= 7:
-            return
+            return True
     await ctx.send(f'LEVEL ERROR: level must be between 0 and 7.')
     return False
 

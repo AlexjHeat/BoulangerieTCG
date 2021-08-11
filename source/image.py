@@ -41,7 +41,7 @@ def add_emblem(im_template, house, level):
 
 
 def add_flavor(im_template, flavor):
-    # TODO: Invent algorithm for dynamic flavor text size
+    # TODO: Come up with algorithm for dynamic flavor text size
     draw = ImageDraw.Draw(im_template)
     flavor_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.ttf", size=40)
     flavor_font.set_variation_by_name("SemiBold SemiCondensed")

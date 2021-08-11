@@ -6,7 +6,7 @@ from source.config import COLOR_HEX, ROLE_PERM, COMMAND_PREFIX
 from source.stats import populate_stats
 from source.image import create_image
 from source.input import *
-from source.verify import verify_card, verify_mentioned
+from source.verify import get_card, verify_mentioned
 from source.models.card import Card
 from source.models.set import Set
 from source.models.card_level import CardLevel
@@ -161,16 +161,15 @@ class EditCards(commands.Cog):
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
     async def user_card(self, ctx):
-        command = f"```{COMMAND_PREFIX}user @user```"
-        session = Session()
+        command = f"```{COMMAND_PREFIX}usercard @user```"
 
-        # Ensures that a user was mentioned in the command and gets it
+        # Ensures that a user was mentioned in the command and returns the discord.Member object
         user = await verify_mentioned(ctx, command=command)
         if user is False:
-            session.rollback
             return False
 
         try:
+            session = Session()
             # Gets the set information for the id, and creates the Card object
             prefix = await set_input(self, session, ctx)
             my_set = session.query(Set).filter(Set.prefix == prefix).one_or_none()
@@ -235,19 +234,29 @@ class EditCards(commands.Cog):
         session = Session()
 
         # Verify that the command argument is correct, and get the proper card_id string
-        my_card = await verify_card(session, card)
+        my_card = await get_card(session, ctx, card)
         if my_card is False:
             session.rollback()
             return
 
-        # TODO: Implement RemoveCard command
-        # Delete it such that it cascades and removes all associated CardLevel and CardInstance objects
-        # Some sort of confirmation, extra security, to prevent deleting the card on accident
-            # send a random code that must be copied and messaged back
-            # make user reply 'yes' in DMs
+        await ctx.send(f"Do you wish to permanently remove card {my_card.id}: **{my_card.title}**, type 'yes' or 'no'.")
 
-        session.commit()
-        session.close()
+        def check(m):
+            return m.author == ctx.author and (m.content == 'yes' or m.content == 'no')
+        try:
+            m = await self.bot.wait_for("message", check=check, timeout=30)
+        except asyncio.TimeoutError:
+            await ctx.send('Card removal timed out.')
+            return
+
+        if m.content == 'no':
+            await ctx.send('Card removal cancelled.')
+            session.rollback()
+        elif m.content == 'yes':
+            session.delete(my_card)
+            session.commit()
+            await ctx.send('Card removed.')
+
 
     @commands.command(name='EditCard', aliases=['editcard', 'edit', 'EDITCARD'])
     @commands.max_concurrency(1)
@@ -257,7 +266,7 @@ class EditCards(commands.Cog):
         session = Session()
 
         # Get the card
-        my_card = await verify_card(session, ctx, card, command)
+        my_card = await get_card(session, ctx, card, command)
         if my_card is False:
             session.rollback()
             return

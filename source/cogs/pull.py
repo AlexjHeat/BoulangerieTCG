@@ -108,7 +108,6 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
         for i in range(len(card_list)):
             if res_text == card_list[i].title:
                 buttons[0][i] = Button(style=ButtonStyle.green, label=card_list[i].title)
-                # TODO
                 q_level = session.query(CardLevel).filter(CardLevel.card_id == card_list[i].id,
                                                           CardLevel.level == 1).one()
                 file = discord.File(q_level.artPath)

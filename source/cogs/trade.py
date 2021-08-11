@@ -1,7 +1,7 @@
 from discord.ext import commands
 from source.db import Session
 from source.config import COMMAND_PREFIX
-from source.verify import verify_mentioned, verify_card, get_user
+from source.verify import verify_mentioned, get_card, get_user
 from source.trade_block import TradeBlock
 import asyncio
 
@@ -52,7 +52,8 @@ async def parse_command_block(session, ctx, m):
         return False, None, None
 
     card = ' '.join(m_split[:-1])
-    my_card = await verify_card(session, ctx, card)
+    if card != '':
+        my_card = await get_card(session, ctx, card)
 
     if not card or not quantity.isdigit() or my_card is False:
         return False, None, None
@@ -92,9 +93,9 @@ class Trade(commands.Cog):
         trade_block = TradeBlock(user1, user2, command_block)
         session = Session()
 
-        # TODO error message after the embed instead of before.
+        m = await ctx.send(embed=trade_block.embed, components=trade_block.buttons)
         while True:
-            m = await ctx.send(embed=trade_block.embed, components=trade_block.buttons)
+            await m.edit(embed=trade_block.embed, components=trade_block.buttons)
 
             msg, button = await get_response(self, ctx, trade_block.user1, trade_block.user2)
             if msg is False:
@@ -116,10 +117,6 @@ class Trade(commands.Cog):
                             f'<@{msg.author.id}> does not have {quantity}x **{my_card.title}** on the trade block')
                         trade_block.reset_buttons()
 
-                else:
-                    await ctx.send(f'To add or remove cards from the trade block, use:\n{command_block}')
-                    continue
-
             if button:
                 res_text = button.component.label
                 await button.respond(type=6)
@@ -136,7 +133,6 @@ class Trade(commands.Cog):
                 session.commit()
                 await m.edit(components=[])
                 await ctx.send("Trade succeeded.")
-            await m.delete()
 
 
 def setup(bot):

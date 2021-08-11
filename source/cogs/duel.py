@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from source.db import Session
 from source.config import COMMAND_PREFIX
-from source.verify import verify_mentioned, verify_card, get_user
+from source.verify import verify_mentioned, get_card, get_user
 from source.models.card import Card
 from source.duel_block import DuelBlock, Duelist
 
@@ -100,7 +100,7 @@ class Duel(commands.Cog):
 
         # Verify that args are valid cards, set active if the user has a leveled version of one
         for card in cards:
-            my_card = await verify_card(session, ctx, card)
+            my_card = await get_card(session, ctx, card)
             if my_card is not False:
                 if my_user.set_active(session, my_card.id) is False:
                     await ctx.send(f"You do not own a leveled **{my_card.title}**.")

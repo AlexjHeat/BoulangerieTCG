@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord_components import *
-from source.verify import verify_card, verify_mentioned, get_user
+from source.verify import get_card, verify_mentioned, get_user
 from source.db import Session
 from source.config import COMMAND_PREFIX, ROLE_PERM
 
@@ -16,10 +16,12 @@ class AdminEdit(commands.Cog):
         session = Session()
 
         # Verify that card exists and get Card.id
-        my_card = await verify_card(session, ctx, card, command)
+        my_card = await get_card(session, ctx, card, command)
         if my_card is False:
             session.rollback()
             return
+
+        # Verify that a user was mentioned
         mentioned_user = await verify_mentioned(ctx, command)
         if mentioned_user is False:
             session.rollback()
@@ -43,11 +45,12 @@ class AdminEdit(commands.Cog):
         session = Session()
 
         # Verify that card exists and get Card.id
-        my_card = await verify_card(session, ctx, card, command)
+        my_card = await get_card(session, ctx, card, command)
         if my_card is False:
             session.rollback()
             return
 
+        # Verify that a user was mentioned
         mentioned_user = await verify_mentioned(ctx, command)
         if mentioned_user is False:
             session.rollback()
@@ -75,7 +78,7 @@ class AdminEdit(commands.Cog):
         command = f'```{COMMAND_PREFIX}rem [card name/ID] [quantity] @user```'
         session = Session()
 
-        my_card = await verify_card(session, ctx, card, command)
+        my_card = await get_card(session, ctx, card, command)
         if my_card is False:
             session.rollback()
             return
@@ -101,7 +104,7 @@ class AdminEdit(commands.Cog):
         command = f'```{COMMAND_PREFIX}up [card name/ID]```'
         session = Session()
 
-        my_card = await verify_card(session, ctx, card, command)
+        my_card = await get_card(session, ctx, card, command)
         if my_card is False:
             session.rollback()
             return
@@ -125,7 +128,7 @@ class AdminEdit(commands.Cog):
         command = f'```{COMMAND_PREFIX}destroy [card name/ID]```'
         session = Session()
 
-        my_card = await verify_card(session, ctx, card, command)
+        my_card = await get_card(session, ctx, card, command)
         if my_card is False:
             session.rollback()
             return
