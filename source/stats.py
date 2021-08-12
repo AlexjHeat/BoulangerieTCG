@@ -1,4 +1,6 @@
-from .models.card_level import CardLevel
+
+from source.config import MAX_STATS
+from source.models.card_level import CardLevel
 import random
 
 

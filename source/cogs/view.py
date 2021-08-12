@@ -21,16 +21,6 @@ class CardList:
         self.lurk = str(lurk)
         self.react = str(react)
 
-    def __lt__(self, other):
-        if self.house != other.house:
-            return self.house < other.house
-        return self.id < other.id
-
-    def __gt__(self, other):
-        if self.house != other.house:
-            return self.house > other.house
-        return self.id > other.id
-
 
 async def get_listview(card_list, index):
     id_w = 6
@@ -79,7 +69,6 @@ class View(commands.Cog):
         # Get list of all cards owned by user
         my_user_list = session.query(CardInstance).filter(CardInstance.user_id == my_user.id).all()
 
-        # TODO order lists by house>id
         # Use my_user_list to create CardList objects with the necessary info for deck view
         view_list = []
         for card in my_user_list:

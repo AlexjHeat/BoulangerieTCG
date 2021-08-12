@@ -1,6 +1,6 @@
 import discord
 from discord_components import *
-from .verify import get_user
+from source.verify import get_user
 
 
 class TradeBlock:

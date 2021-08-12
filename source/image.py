@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
-from .config import COLOR_STR
-from .models.card_level import CardLevel
+from source.config import COLOR_STR
+from source.models.card_level import CardLevel
 import textwrap
 
 
