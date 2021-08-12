@@ -1,7 +1,7 @@
 import discord
 from discord_components import *
-from source.db import Session
-from source.verify import get_user
+from .db import Session
+from .verify import get_user
 import random
 
 
