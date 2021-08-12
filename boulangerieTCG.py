@@ -1,10 +1,10 @@
 import os
 from discord.ext import commands
-from source import config
+from source.config import COMMAND_PREFIX
 from discord_components import *
+from source.sensitive_info import TOKEN
 
-
-bot = commands.Bot(command_prefix=config.COMMAND_PREFIX)
+bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 
 
 @bot.event
@@ -27,4 +27,4 @@ for filename in os.listdir('./source/cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'source.cogs.{filename[:-3]}')
 
-bot.run(config.DISCORD_TOKEN)
+bot.run(TOKEN)

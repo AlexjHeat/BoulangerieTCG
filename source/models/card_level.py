@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from source.db import Base
-from source.models.card import Card
+from .card import Card
 
 
 class CardLevel(Base):

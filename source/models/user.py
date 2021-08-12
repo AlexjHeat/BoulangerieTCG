@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
 from source.db import Base
-from source.models.card_instance import CardInstance
-from source.models.card_level import CardLevel
-from source.models.card import Card
+from .card_instance import CardInstance
+from .card_level import CardLevel
+from .card import Card
 
 class User(Base):
     __tablename__ = 'users'

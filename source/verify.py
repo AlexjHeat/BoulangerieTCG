@@ -1,7 +1,7 @@
 from sqlalchemy import func
-from source.models.card import Card
-from source.models.set import Set
-from source.models.user import User
+from .models.card import Card
+from .models.set import Set
+from .models.user import User
 
 
 def get_user(session, user_id):
