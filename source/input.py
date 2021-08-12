@@ -1,6 +1,6 @@
-from source.config import MAX_TITLE_LENGTH, MIN_STATS, MAX_STATS
-from source.models.set import Set
-from source.models.card import RarityEnum, HouseEnum
+from .config import MAX_TITLE_LENGTH, MIN_STATS, MAX_STATS
+from .models.set import Set
+from .models.card import RarityEnum, HouseEnum
 
 
 # Checks if user input is in a list
