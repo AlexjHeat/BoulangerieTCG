@@ -32,7 +32,7 @@ class EditSets(commands.Cog):
         await ctx.send(f'**{prefix.upper()}: {name}** has been created.')
         session.commit()
 
-    @commands.command(name='RemoveSet', aliases= ['removeset'])
+    @commands.command(name='RemoveSet', aliases=['removeset'])
     @commands.has_role(ROLE_PERM)
     async def remove_set(self, ctx, prefix):
         command = f"```{COMMAND_PREFIX}removeset [set id]```"
@@ -52,7 +52,7 @@ class EditSets(commands.Cog):
         session.commit()
         await ctx.send(f'**{my_set.prefix}: {my_set.name}** has been deleted.')
 
-    @commands.command(name='boost', aliases= ['BOOST'])
+    @commands.command(name='boost', aliases=['BOOST'])
     @commands.has_role(ROLE_PERM)
     async def boost(self, ctx, prefix):
         command = f"```{COMMAND_PREFIX}boost [set id]```"

@@ -140,12 +140,12 @@ class Pull(commands.Cog):
             refresh()
             print(f'user pulls refreshed at {now.hour}:{now.minute}')
 
-    @commands.command(name='pull', aliases=['p', 'P', 'PULL', 'Pull'])
+    @commands.command(name='pull', aliases=['p', 'P', 'PULL'])
     async def pull(self, ctx):
         user_id = str(ctx.message.author.id)
         await pull_cards(self, ctx, user_id, check_pull=True)
 
-    @commands.command(name="freepull", aliases=['freep', 'FREEPULL'])
+    @commands.command(name="freepull", aliases=['free', 'FREE', 'FREEPULL'])
     async def free_pull(self, ctx, quantity):
         command = f"```{COMMAND_PREFIX}freePull [quantity] @user```"
 

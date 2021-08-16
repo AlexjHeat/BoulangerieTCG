@@ -38,7 +38,7 @@ class AdminEdit(commands.Cog):
         session.rollback()
         await ctx.send(f'Quantity must be between 1 and 30\n{command}')
 
-    @commands.command(aliases=['removefragment', 'REMOVEFRAGMENT', 'remove', 'REMOVE', 'rem'])
+    @commands.command(aliases=['removefragment', 'REMOVEFRAGMENT', 'remove', 'REMOVE', 'rem', 'REM'])
     @commands.has_role(ROLE_PERM)
     async def remove_fragment(self, ctx, card, n):
         command = f'```{COMMAND_PREFIX}rem [card name/ID] [quantity] @user```'
@@ -72,7 +72,7 @@ class AdminEdit(commands.Cog):
         await ctx.send(f'Quantity must be greater than 0.\n{command}')
         session.rollback()
 
-    @commands.command(aliases=['setlevel', 'level', 'lvl', 'LVL', 'Level'])
+    @commands.command(aliases=['setlevel', 'level', 'lvl', 'LVL'])
     @commands.has_role(ROLE_PERM)
     async def set_level(self, ctx, card, lvl):
         command = f'```{COMMAND_PREFIX}rem [card name/ID] [quantity] @user```'
@@ -123,7 +123,7 @@ class AdminEdit(commands.Cog):
             await ctx.send(file=file)
             await ctx.send(f"{ctx.author.display_name} has upgraded their **{my_card.title}** to lvl {lvl + 1}!")
 
-    @commands.command(aliases=['DESTROY', 'DES', 'des', 'Destroy'])
+    @commands.command(aliases=['DESTROY'])
     async def destroy(self, ctx, card):
         command = f'```{COMMAND_PREFIX}destroy [card name/ID]```'
         session = Session()

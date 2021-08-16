@@ -46,7 +46,7 @@ class View(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=['VIEW', 'v', 'V'])
     async def view(self, ctx, card_id, level='1'):
         command = f"```{COMMAND_PREFIX}view [card id/title] [level]```"
         session = Session()
@@ -61,7 +61,7 @@ class View(commands.Cog):
         file = discord.File(f'./media/cards/{my_card.id}_{level}.png')
         await ctx.send(file=file)
 
-    @commands.command()
+    @commands.command(aliases=['DECK', 'd', 'D'])
     async def deck(self, ctx):
         session = Session()
         my_user = get_user(session, str(ctx.author.id))

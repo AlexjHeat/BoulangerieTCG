@@ -4,7 +4,7 @@ from source.config import COMMAND_PREFIX
 from discord_components import *
 from source.sensitive_info import TOKEN
 
-bot = commands.Bot(command_prefix=COMMAND_PREFIX)
+bot = commands.Bot(command_prefix=COMMAND_PREFIX, help_command=None)
 
 
 @bot.event

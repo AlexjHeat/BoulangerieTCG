@@ -157,7 +157,7 @@ class EditCards(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='UserCard', aliases=['usercard', 'user', 'USERCARD'])
+    @commands.command(name='UserCard', aliases=['usercard', 'user', 'USER', 'USERCARD'])
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
     async def user_card(self, ctx):
@@ -199,8 +199,7 @@ class EditCards(commands.Cog):
             await ctx.send("Card creation: timed out")
             return False
 
-
-    @commands.command(name= 'CustomCard', aliases=['customcard', 'custom', 'CUSTOMCARD'])
+    @commands.command(name='CustomCard', aliases=['customcard', 'custom', 'CUSTOM', 'CUSTOMCARD'])
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
     async def custom_card(self, ctx):
@@ -258,7 +257,7 @@ class EditCards(commands.Cog):
             await ctx.send('Card removed.')
 
 
-    @commands.command(name='EditCard', aliases=['editcard', 'edit', 'EDITCARD'])
+    @commands.command(name='EditCard', aliases=['editcard', 'edit', 'EDIT', 'EDITCARD'])
     @commands.max_concurrency(1)
     @commands.has_role(ROLE_PERM)
     async def edit_card(self, ctx, card):

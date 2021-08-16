@@ -23,10 +23,10 @@ class Duel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=['DUEL'])
     @commands.max_concurrency(1)
     async def duel(self, ctx):
-        command = f'```{COMMAND_PREFIX}d @user```'
+        command = f'```{COMMAND_PREFIX}duel @user```'
 
         # Get both users for the trade
         user1 = ctx.author
