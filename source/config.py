@@ -1,7 +1,5 @@
 from .sensitive_info import URI, TOKEN
 
-
-
 COMMAND_PREFIX = '.'
 
 ROLE_PERM = 'Sous Chef'
