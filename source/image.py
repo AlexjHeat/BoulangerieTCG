@@ -15,7 +15,7 @@ def add_title(im_template, title):
     draw = ImageDraw.Draw(im_template)
 
     for size in range(25, 67):
-        name_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.ttf", size=size)
+        name_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.TTF", size=size)
         name_font.set_variation_by_name("SemiBold Condensed")
         w, h = name_font.getsize(title)
         if w > 350 or h > 60:
@@ -26,7 +26,7 @@ def add_title(im_template, title):
 def add_id(im_template, id, house):
     draw = ImageDraw.Draw(im_template)
 
-    id_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.ttf", size=36)
+    id_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.TTF", size=36)
     id_font.set_variation_by_name("SemiBold Condensed")
     draw.text((515, 60), f'#{id}', fill=COLOR_STR[house], font=id_font, anchor="ra")
 
@@ -43,7 +43,7 @@ def add_emblem(im_template, house, level):
 def add_flavor(im_template, flavor):
     # TODO: Come up with algorithm for dynamic flavor text size
     draw = ImageDraw.Draw(im_template)
-    flavor_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.ttf", size=40)
+    flavor_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.TTF", size=40)
     flavor_font.set_variation_by_name("SemiBold SemiCondensed")
 
     rows = flavor.split('\n')
@@ -57,7 +57,7 @@ def add_flavor(im_template, flavor):
 
 def add_stats(im_template, post, lurk, react):
     draw = ImageDraw.Draw(im_template)
-    stat_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.ttf", size=50)
+    stat_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.TTF", size=50)
     stat_font.set_variation_by_name("Bold SemiCondensed")
 
     draw.text((90, 1022), str(post), fill='#f6f4e8', font=stat_font, anchor='mm')

@@ -3,10 +3,10 @@ import random
 
 
 def pick_stat(stats):
-    rand = random.randint(1, sum(stats)**2)
-    if rand <= stats[0]**2:
+    rand = random.randint(1, sum(stats))
+    if rand <= stats[0]:
         return 0
-    if rand <= stats[1]**2:
+    if rand <= stats[1]:
         return 1
     return 2
     # TODO: Make pick_stats() a bit more biased towards picking the higher stats, and a bit more even with even stats
