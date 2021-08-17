@@ -21,6 +21,13 @@ class CardList:
         self.lurk = str(lurk)
         self.react = str(react)
 
+    def __lt__(self, other):
+        if self.house != other.house:
+            return self.house < other.house
+        return self.id < other.id
+
+    def __eq__(self, other):
+        return self.id == other.id
 
 async def get_listview(card_list, index):
     id_w = 6
@@ -77,6 +84,9 @@ class View(commands.Cog):
                                                            CardLevel.level == card.level).one()
                 view_list.append(CardList(card.card_id, my_level.get_title(session), my_level.get_house(session),
                                           card.level, card.quantity, my_level.post, my_level.lurk, my_level.react))
+
+        # TODO: verify that sort works
+        view_list = sorted(view_list)
 
         # Define the buttons
         buttons = [[Button(style=ButtonStyle.blue, label="First"),
