@@ -14,7 +14,7 @@ class DuelBlock:
                          Button(style=ButtonStyle.blue, label='Lurk'),
                          Button(style=ButtonStyle.blue, label='React'),
                          Button(style=ButtonStyle.red, label='Cancel')]]
-        self.file = discord.File('./media/images/vs.gif', filename='thumbnail.gif')
+        self.file = discord.File('media/images/duel_advantage.png', filename='thumbnail.gif')
 
         self.embed = discord.Embed(title=f'{user1.display_name} has challenged {user2.display_name} to a duel!', color=discord.Color.dark_red())
         self.embed.set_thumbnail(url='attachment://thumbnail.gif')

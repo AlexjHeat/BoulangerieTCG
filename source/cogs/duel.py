@@ -1,5 +1,4 @@
 import asyncio
-
 import discord
 from discord.ext import commands
 from source.db import Session
@@ -45,6 +44,7 @@ class Duel(commands.Cog):
 
         # Send embed + buttons and wait for responses
         m = await ctx.send(file=duel_block.file, embed=duel_block.embed, components=duel_block.buttons)
+
         while duel_block.user1.attack is None or duel_block.user2.attack is None:
             duel_block.user2.attack = 'Post'
 
@@ -58,6 +58,7 @@ class Duel(commands.Cog):
             # Process the button response
             if button.component.label == 'Cancel':
                 await ctx.send('Duel canceled.')
+                await m.edit(components=[])
                 return
             duel_block.process_button(button)
 
@@ -80,7 +81,7 @@ class Duel(commands.Cog):
         await asyncio.sleep(2)
         await ctx.send(f'{duel_block.user2.name}  {duel_block.user2.attack}s for {duel_block.user2} damage!')
         await ctx.send(f'{duel_block.get_winner()} has won the duel!')
-        # Team Userx has won!
+        await m.edit(components=[])
 
 
     @commands.command()
