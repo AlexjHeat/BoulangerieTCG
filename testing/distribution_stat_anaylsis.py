@@ -4,14 +4,14 @@
 cards_per_full_upgrade = 1+2+3+4+5+6+7
 # Rarity: [standard, rare, legendary]
 pulls_per_day = 1
-card_per_pull = 5
+card_per_pull = 3
 
-packs_per_rare = 1
-packs_per_legend = 5
+packs_per_rare = 1.5
+packs_per_legend = 7
 
 # Card Amount
-standard_amt = 24
-rare_amt = 12
+standard_amt = 32
+rare_amt = 16
 legendary_amt = 4
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
