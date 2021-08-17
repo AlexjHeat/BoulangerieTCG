@@ -97,3 +97,10 @@ class User(Base):
             level_list.append(session.query(CardLevel).filter(CardLevel.card_id == card.card_id,
                                                               CardLevel.level == card.level).one())
         return level_list
+
+    def get_upgrade_info(self, session, card_id):
+        instance = session.query(CardInstance).filter(CardInstance.user_id == self.id,
+                                                      CardInstance.card_id == card_id).one()
+        next_level = instance.level + 1
+        amount_needed = max(0, next_level - instance.quantity)
+        return next_level, amount_needed

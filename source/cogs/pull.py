@@ -48,7 +48,7 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
     # checks if user has a pull available if necessary
     if check_pull:
         if my_user.pull_available is False:
-            await ctx.send(f'No pull available, resets at 0:00 GMT')
+            await ctx.send(f'No pull available, resets at midnight EST')
             return False
         my_user.pull_available = False
 
@@ -75,7 +75,9 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
     for c in card_list:
         buttons[0].append(Button(style=ButtonStyle.blue, label=c.title))
         my_user.add_to_deck(session, c.id, 1)
-        await ctx.send(f'You found a **{c.title}** [*{c.rarity.name}*]!')
+        next_level, amount_needed = my_user.get_upgrade_info(session, c.id)
+        await ctx.send(f'You found a **{c.title}** [*{c.rarity.name}*]!  You need {amount_needed} more to upgrade to '
+                       f'level {next_level}.')
 
     # Display the buttons, and the message which will be edited to hold images
     session.commit()
