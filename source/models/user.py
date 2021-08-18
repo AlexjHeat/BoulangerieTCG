@@ -14,7 +14,7 @@ class User(Base):
     pull_available = Column(Boolean)
     deck_private = Column(Boolean)
 
-    card_instances = relationship("CardInstance", back_populates="user")
+    card_instances = relationship("CardInstance", back_populates="user", cascade="all, delete")
 
     def add_to_deck(self, session, card_id, n):
         if n < 0:

@@ -26,7 +26,7 @@ class Card(Base):
     flavor = Column(String)
     artPath = Column(String)
 
-    card_instances = relationship("CardInstance", back_populates="card")
-    card_levels = relationship("CardLevel", back_populates="card")
+    card_instances = relationship("CardInstance", back_populates="card", cascade="all, delete")
+    card_levels = relationship("CardLevel", back_populates="card", cascade="all, delete")
     set = relationship("Set", back_populates="cards")
 

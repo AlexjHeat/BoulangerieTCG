@@ -10,5 +10,5 @@ class Set(Base):
     total_cards = Column(Integer)
     boosted = Column(Boolean)
 
-    cards = relationship("Card", back_populates="set")
+    cards = relationship("Card", back_populates="set", cascade="all, delete")
 
