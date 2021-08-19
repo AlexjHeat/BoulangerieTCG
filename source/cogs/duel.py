@@ -77,10 +77,10 @@ class Duel(commands.Cog):
         await asyncio.sleep(1)
 
         # Send damage messages
-        await ctx.send(f'{duel_block.user1.name}  {duel_block.user1.attack}s for {duel_block.user1} damage!')
+        await ctx.send(f'{duel_block.user1.name}  {duel_block.user1.attack}s for {duel_block.user1.damage} damage!')
         await asyncio.sleep(2)
-        await ctx.send(f'{duel_block.user2.name}  {duel_block.user2.attack}s for {duel_block.user2} damage!')
-        await ctx.send(f'{duel_block.get_winner()} has won the duel!')
+        await ctx.send(f'{duel_block.user2.name}  {duel_block.user2.attack}s for {duel_block.user2.damage} damage!')
+        await ctx.send(f'{duel_block.get_winner().name} has won the duel!')
         await m.edit(components=[])
 
 
