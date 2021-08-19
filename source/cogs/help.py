@@ -66,7 +66,7 @@ class Help(commands.Cog):
                   f".freepull [amount] [@user]      :: 'Gives a free pull of between 1 and 5 cards to the pinged" \
                         f" player.'}}\n" \
                   f"```"
-        await ctx.send(msg)
+            await ctx.send(msg)
 
 
 def setup(bot):
