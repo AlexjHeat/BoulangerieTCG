@@ -58,7 +58,7 @@ class View(commands.Cog):
         command = f"```{COMMAND_PREFIX}view [card id/title] [level]```"
         session = Session()
 
-        my_card = get_card(session, ctx, card_id, command=command)
+        my_card = await get_card(session, ctx, card_id, command=command)
         if my_card is False:
             return
 

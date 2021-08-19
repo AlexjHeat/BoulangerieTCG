@@ -29,4 +29,3 @@ class Card(Base):
     card_instances = relationship("CardInstance", back_populates="card", cascade="all, delete")
     card_levels = relationship("CardLevel", back_populates="card", cascade="all, delete")
     set = relationship("Set", back_populates="cards")
-

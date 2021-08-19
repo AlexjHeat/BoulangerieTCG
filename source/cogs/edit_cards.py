@@ -252,6 +252,7 @@ class EditCards(commands.Cog):
             await ctx.send('Card removal cancelled.')
             session.rollback()
         elif m.content == 'yes':
+            my_card.set.total_cards -= 1
             session.delete(my_card)
             session.commit()
             await ctx.send('Card removed.')
