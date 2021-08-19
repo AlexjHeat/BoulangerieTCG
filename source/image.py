@@ -44,11 +44,11 @@ def add_flavor(im_template, flavor):
     # TODO: Come up with algorithm for dynamic flavor text size
     draw = ImageDraw.Draw(im_template)
     flavor_font = ImageFont.FreeTypeFont("./media/fonts/BAHNSCHRIFT.TTF", size=32)
-    flavor_font.set_variation_by_name("SemiBold SemiCondensed")
+    flavor_font.set_variation_by_name("Bold Condensed")
 
     rows = flavor.split('\n')
     for i in range(len(rows)):
-        rows[i] = "\n".join(textwrap.wrap(rows[i], 47))
+        rows[i] = "\n".join(textwrap.wrap(rows[i], 55))
     flavor = "\n".join(rows)
 
     draw.multiline_text((375, 810), flavor, fill="#4b443c", font=flavor_font, anchor='mm', spacing=12)
