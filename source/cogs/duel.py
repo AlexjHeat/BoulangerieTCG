@@ -46,8 +46,6 @@ class Duel(commands.Cog):
         m = await ctx.send(file=duel_block.file, embed=duel_block.embed, components=duel_block.buttons)
 
         while duel_block.user1.attack is None or duel_block.user2.attack is None:
-            duel_block.user2.attack = 'Post'
-
             def check(b):
                 if b.channel == ctx.channel:
                     return b.author == user1 or b.author == user2
