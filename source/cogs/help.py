@@ -28,7 +28,7 @@ class Help(commands.Cog):
                     f"button with their name on it.  Either user could cancel at any time.'}}\n" \
               f".duel [@user]        ::  'Initiate a duel with the pinged user.  The stats from your active cards " \
                     f"will be totaled, and both duelists will select 1 of 3 attacks to use. Dueling uses rock-paper-" \
-                    f"scissor mechanics to determine if a duelist gains an advantage.  POST beats LURK beast REACT.'}}\n" \
+                    f"scissor mechanics to determine if a duelist gains an advantage.  POST beats LURK beats REACT.'}}\n" \
               f"```"
         await ctx.send(msg)
 

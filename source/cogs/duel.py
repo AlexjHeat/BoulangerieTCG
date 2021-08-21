@@ -50,7 +50,7 @@ class Duel(commands.Cog):
 
             def check(b):
                 if b.channel == ctx.channel:
-                    return b.author == user1 or b.channel == user2
+                    return b.author == user1 or b.author == user2
 
             button = await self.bot.wait_for("button_click", check=check, timeout=180)
             await button.respond(type=6)
