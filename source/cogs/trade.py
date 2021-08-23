@@ -22,6 +22,7 @@ async def get_response(self, ctx, user1, user2):
             return but_text == user1.name
         if b.author.id == user2.id:
             return but_text == user2.name
+        return False
 
     # wait for message or response
     try:
@@ -100,7 +101,7 @@ class Trade(commands.Cog):
             msg, button = await get_response(self, ctx, trade_block.user1, trade_block.user2)
             if msg is False:
                 session.rollback()
-                await ctx.send("Trade timed out")
+                await ctx.send("Trade timed out.")
                 return
 
             if msg:

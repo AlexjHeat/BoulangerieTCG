@@ -50,6 +50,7 @@ class User(Base):
     def get_level(self, session, card_id):
         q = session.query(CardInstance).filter(CardInstance.user_id == self.id,
                                                CardInstance.card_id == card_id).one_or_none()
+        print(q.level)
         if q is None:
             return 0
         return q.level

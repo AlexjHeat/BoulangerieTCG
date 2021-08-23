@@ -41,7 +41,7 @@ async def get_listview(card_list, index):
           f"{'Amount'.ljust(amount_w)}{'Post'.ljust(stat_w)}{'Lurk'.ljust(stat_w)}{'React'.ljust(stat_w)}\n"
 
     for card in card_list[index:index+15]:
-        msg += f"{card.id.ljust(id_w)}{card.title.ljust(title_w)}{card.house.ljust(house_w)}" \
+        msg += f"{card.id.ljust(id_w)}{card.title.ljust(title_w).lower()}{card.house.ljust(house_w)}" \
                f"{card.level.ljust(level_w)}{card.quantity.ljust(amount_w)}{card.post.ljust(stat_w)}" \
                f"{card.lurk.ljust(stat_w)}{card.react.ljust(stat_w)}\n"
 

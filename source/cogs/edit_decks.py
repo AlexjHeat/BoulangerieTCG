@@ -4,6 +4,7 @@ from discord_components import *
 from source.verify import get_card, verify_mentioned, get_user
 from source.db import Session
 from source.config import COMMAND_PREFIX, ROLE_PERM
+from source.models.card_level import CardLevel
 
 class AdminEdit(commands.Cog):
     def __init__(self, bot):
@@ -112,14 +113,17 @@ class AdminEdit(commands.Cog):
         my_user = get_user(session, str(ctx.author.id))
         lvl = my_user.get_level(session, my_card.id)
         n = my_user.get_quantity(session, my_card.id)
+        print(lvl)
         if n < lvl + 1:
             session.rollback()
             await ctx.send(f"{ctx.author.display_name} needs {lvl + 1} fragments to upgrade **{my_card.title}**, has {n}.")
         else:
             my_user.remove_from_deck(session, my_card.id, lvl + 1)
             my_user.set_level(session, my_card.id, lvl + 1)
+            my_level = session.query(CardLevel).filter(CardLevel.card_id == my_card.id, CardLevel.level == lvl + 1).one()
             session.commit()
-            file = discord.File(my_card.get_image_path(session, lvl + 1))
+
+            file = discord.File(my_level.artPath)
             await ctx.send(file=file)
             await ctx.send(f"{ctx.author.display_name} has upgraded their **{my_card.title}** to lvl {lvl + 1}!")
 
@@ -139,6 +143,10 @@ class AdminEdit(commands.Cog):
         buttons = [[Button(style=ButtonStyle.green, label='Accept'),
                     Button(style=ButtonStyle.red, label='Cancel')]]
         fragments = my_user.fragments_from_destroy(session, my_card.id)
+        if fragments == 0:
+            session.rollback()
+            await ctx.send("You do not have a leveled version of this card.")
+            return
 
         m = await ctx.send(f"Shatter your lvl {level} **{my_card.title}** into {fragments} fragments?",
                            components=buttons)
@@ -151,8 +159,8 @@ class AdminEdit(commands.Cog):
 
         if res_text == 'Accept':
             await m.edit(components=[])
-            my_user.set_level(session, my_card.id, 0)
             my_user.add_to_deck(session, my_card.id, fragments)
+            my_user.set_level(session, my_card.id, 0)
             session.commit()
             await ctx.send("Shattered.")
             return True
