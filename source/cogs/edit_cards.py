@@ -66,10 +66,8 @@ async def accept_card(self, session, ctx, my_card):
         res_text = res.component.label
 
         if res_text == 'Accept':
-            await m.edit(components=[])
             return True
         elif res_text == 'Cancel':
-            await m.edit(components=[])
             return False
 
         await m.edit(components=buttons_edit)

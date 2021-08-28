@@ -1,5 +1,4 @@
 import asyncio
-
 import discord
 from discord.ext import commands
 from discord_components import *
@@ -8,6 +7,7 @@ from source.config import COMMAND_PREFIX, MAX_TITLE_LENGTH
 from source.verify import get_card, get_user, verify_level
 from source.models.card_instance import CardInstance
 from source.models.card_level import CardLevel
+import random
 
 
 class CardList:
@@ -86,13 +86,15 @@ class View(commands.Cog):
                                           card.level, card.quantity, my_level.post, my_level.lurk, my_level.react))
 
         # TODO: verify that sort works
-        view_list = sorted(view_list)
 
         # Define the buttons
-        buttons = [[Button(style=ButtonStyle.blue, label="First"),
-                    Button(style=ButtonStyle.blue, label="Previous"),
-                    Button(style=ButtonStyle.blue, label="Next"),
-                    Button(style=ButtonStyle.blue, label="Last")]]
+        button_ids = []
+        for i in range(0, 4):
+            button_ids.append(str(random.randint(0, 99999)))
+        buttons = [[Button(style=ButtonStyle.blue, label="First", custom_id=button_ids[0]),
+                    Button(style=ButtonStyle.blue, label="Previous", custom_id=button_ids[1]),
+                    Button(style=ButtonStyle.blue, label="Next", custom_id=button_ids[2]),
+                    Button(style=ButtonStyle.blue, label="Last", custom_id=button_ids[3])]]
 
         # Post the first 15 cards
         index = 0
@@ -101,22 +103,23 @@ class View(commands.Cog):
         while True:
             # Get the button response
             def check(b):
-                return b.channel == ctx.channel
+                return b.channel == ctx.channel and b.custom_id in button_ids
             try:
                 button = await self.bot.wait_for("button_click", check=check, timeout=100)
             except asyncio.TimeoutError:
+                await msg.edit(components=[])
                 return
-            res = button.component.label
+
             await button.respond(type=6)
 
             # Change the index according to the button response
-            if res == 'First':
+            if button.custom_id == button_ids[0]:
                 index = 0
-            elif res == 'Previous':
+            elif button.custom_id == button_ids[1]:
                 index = max(index - 15, 0)
-            elif res == 'Next':
+            elif button.custom_id == button_ids[2]:
                 index = min(index + 15, len(view_list) - 1)
-            elif res == 'Last':
+            elif button.custom_id == button_ids[3]:
                 index = max(0, len(view_list) - 15)
 
             # Edit message

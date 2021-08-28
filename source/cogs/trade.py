@@ -7,7 +7,7 @@ import asyncio
 
 
 # Waits for the user to respond via message or button, returns both
-async def get_response(self, ctx, user1, user2):
+async def get_response(self, ctx, user1, user2, button_ids):
     def check_message(m):
         if (m.author.id == user1.id or m.author.id == user2.id) and m.channel == ctx.channel:
             if m.content[0] == '-' or m.content[0] == '+':
@@ -16,6 +16,8 @@ async def get_response(self, ctx, user1, user2):
 
     def check_button(b):
         but_text = b.component.label
+        if b.custom_id not in button_ids:
+            return False
         if but_text == 'Cancel':
             return b.author.id == user1.id or b.author.id == user2.id
         if b.author.id == user1.id:
@@ -98,7 +100,7 @@ class Trade(commands.Cog):
         while True:
             await m.edit(embed=trade_block.embed, components=trade_block.buttons)
 
-            msg, button = await get_response(self, ctx, trade_block.user1, trade_block.user2)
+            msg, button = await get_response(self, ctx, trade_block.user1, trade_block.user2, trade_block.button_ids)
             if msg is False:
                 session.rollback()
                 await ctx.send("Trade timed out.")
@@ -110,24 +112,23 @@ class Trade(commands.Cog):
                     if trade_block.add_block(session, msg.author.id, my_card, quantity) is False:
                         await ctx.send(
                             f'<@{msg.author.id}> does not have {quantity}x **{my_card.title}** to add to the trade block')
-                        trade_block.reset_buttons()
+                    trade_block.reset_buttons()
 
                 elif sign == '-':
                     if trade_block.remove_block(msg.author.id, my_card, quantity) is False:
                         await ctx.send(
                             f'<@{msg.author.id}> does not have {quantity}x **{my_card.title}** on the trade block')
-                        trade_block.reset_buttons()
+                    trade_block.reset_buttons()
 
             if button:
-                res_text = button.component.label
                 await button.respond(type=6)
 
-                if res_text == 'Cancel':
+                if button.custom_id == trade_block.button_ids[1]:
                     await m.edit(components=[])
                     await ctx.send('Trade cancelled.')
                     return
 
-                trade_block.accept_button(res_text)
+                trade_block.accept_button(button.custom_id)
 
             if trade_block.user1.accept and trade_block.user2.accept:
                 execute_trade(session, trade_block.user1, trade_block.user2)

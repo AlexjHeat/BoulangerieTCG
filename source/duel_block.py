@@ -10,10 +10,13 @@ class DuelBlock:
     def __init__(self, user1, user2):
         self.user1 = Duelist(user1)
         self.user2 = Duelist(user2)
-        self.buttons = [[Button(style=ButtonStyle.blue, label='Post'),
-                         Button(style=ButtonStyle.blue, label='Lurk'),
-                         Button(style=ButtonStyle.blue, label='React'),
-                         Button(style=ButtonStyle.red, label='Cancel')]]
+        self.button_ids = []
+        for i in range(4):
+            self.button_ids.append(str(random.randint(0, 99999)))
+        self.buttons = [[Button(style=ButtonStyle.blue, label='Post', custom_id=self.button_ids[0]),
+                         Button(style=ButtonStyle.blue, label='Lurk', custom_id=self.button_ids[1]),
+                         Button(style=ButtonStyle.blue, label='React', custom_id=self.button_ids[2]),
+                         Button(style=ButtonStyle.red, label='Cancel', custom_id=self.button_ids[3])]]
         self.file = discord.File('media/images/duel_advantage.png', filename='thumbnail.gif')
 
         self.embed = discord.Embed(title=f'{user1.display_name} has challenged {user2.display_name} to a duel!', color=discord.Color.dark_red())

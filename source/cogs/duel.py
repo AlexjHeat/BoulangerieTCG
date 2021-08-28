@@ -47,14 +47,18 @@ class Duel(commands.Cog):
 
         while duel_block.user1.attack is None or duel_block.user2.attack is None:
             def check(b):
-                if b.channel == ctx.channel:
+                if b.channel == ctx.channel and b.custom_id in duel_block.button_ids:
                     return b.author == user1 or b.author == user2
-
-            button = await self.bot.wait_for("button_click", check=check, timeout=180)
+            try:
+                button = await self.bot.wait_for("button_click", check=check, timeout=180)
+            except asyncio.TimeoutError:
+                await ctx.send('Duel timed out.')
+                await m.edit(components=[])
+                return
             await button.respond(type=6)
 
             # Process the button response
-            if button.component.label == 'Cancel':
+            if button.custom_id == duel_block.button_ids[3]:
                 await ctx.send('Duel canceled.')
                 await m.edit(components=[])
                 return
@@ -79,8 +83,6 @@ class Duel(commands.Cog):
         await asyncio.sleep(2)
         await ctx.send(f'{duel_block.user2.name}  {duel_block.user2.attack}s for {duel_block.user2.damage} damage!')
         await ctx.send(f'{duel_block.get_winner().name} has won the duel!')
-        await m.edit(components=[])
-
 
     @commands.command()
     async def activate(self, ctx, *cards):

@@ -71,12 +71,14 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
     await ctx.send(file=slot_file)
 
     # Create the list of buttons (1 per card), display the card names, update user's collection
+    button_ids = []
     buttons = [[]]
-    for c in card_list:
-        buttons[0].append(Button(style=ButtonStyle.blue, label=c.title))
-        my_user.add_to_deck(session, c.id, 1)
-        next_level, amount_needed = my_user.get_upgrade_info(session, c.id)
-        await ctx.send(f'You found a **{c.title}** [*{c.rarity.name}*]!  You need {amount_needed} more to upgrade to '
+    for i in range(len(card_list)):
+        button_ids.append(str(random.randint(0, 999999)))
+        buttons[0].append(Button(style=ButtonStyle.blue, label=card_list[i].title, custom_id=button_ids[i]))
+        my_user.add_to_deck(session, card_list[i].id, 1)
+        next_level, amount_needed = my_user.get_upgrade_info(session, card_list[i].id)
+        await ctx.send(f'You found a **{card_list[i].title}** [*{card_list[i].rarity.name}*]!  You need {amount_needed} more to upgrade to '
                        f'level {next_level}.')
 
     # Display the buttons, and the message which will be edited to hold images
@@ -89,19 +91,13 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
     x.start()
     while True:
         def check(b):
-            return ctx.author == b.author
-
+            return b.channel == ctx.channel and b.custom_id in button_ids
         try:
-            res = await self.bot.wait_for("button_click", timeout=30)
+            res = await self.bot.wait_for("button_click", check=check, timeout=30)
         except asyncio.TimeoutError:
-            await m_but.delete()
             return
 
-        try:
-            await res.respond(type=6)
-        except Exception as e:
-            await m_but.delete()
-            return
+        await res.respond(type=6)
 
         res_text = res.component.label
         if m_img_exist:
@@ -109,13 +105,13 @@ async def pull_cards(self, ctx, user_id, check_pull=False, count=PULLS_PER_DAY):
 
         for i in range(len(card_list)):
             if res_text == card_list[i].title:
-                buttons[0][i] = Button(style=ButtonStyle.green, label=card_list[i].title)
+                buttons[0][i] = Button(style=ButtonStyle.green, label=card_list[i].title, custom_id=button_ids[i])
                 q_level = session.query(CardLevel).filter(CardLevel.card_id == card_list[i].id,
                                                           CardLevel.level == 1).one()
                 file = discord.File(q_level.artPath)
                 m_img = await ctx.send(file=file)
             else:
-                buttons[0][i] = Button(style=ButtonStyle.blue, label=card_list[i].title)
+                buttons[0][i] = Button(style=ButtonStyle.blue, label=card_list[i].title, custom_id=button_ids[i])
             m_img_exist = True
         await m_but.edit(components=buttons)
 
