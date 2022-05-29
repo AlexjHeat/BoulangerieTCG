@@ -5,8 +5,8 @@ asyncpg>=0.20.1
 attrs>=19.3.0
 chardet>=3.0.4
 colorama>=0.4.3
-nextcord==2.0.0a6 
-#discord.py>=1.5.1
+discord.py>=1.5.1
+discord-components>=2.1.2
 et-xmlfile>=1.0.1
 idna>=2.8
 isort>=4.3.21
