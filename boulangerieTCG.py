@@ -11,7 +11,7 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX, help_command=None)
 @bot.event
 async def on_ready():
     DiscordComponents(bot)
-    print('Bot is online.')
+    print('Bot is onine.')
 
 
 @bot.command()
