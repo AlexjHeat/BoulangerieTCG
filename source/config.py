@@ -1,8 +1,8 @@
-from .sensitive_info import URI, TOKEN
+from .sensitive_info import TOKEN
 
 COMMAND_PREFIX = '.'
 
-ROLE_PERM = 'Sous Chef'
+ROLE_PERM = ''
 
 COLOR_HEX = {'auvergne': 0x4378c2, 'burgundy': 0xebab42, 'lyonnais': 0xac496b, 'provence': 0x466766}
 COLOR_STR = {'auvergne': '#4378c2', 'burgundy': '#ebab42', 'lyonnais': '#ac496b', 'provence': '#466766'}

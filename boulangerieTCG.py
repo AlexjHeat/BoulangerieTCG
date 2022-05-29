@@ -1,4 +1,5 @@
 import os
+import discord
 from discord.ext import commands
 from source.config import COMMAND_PREFIX
 from discord_components import *
