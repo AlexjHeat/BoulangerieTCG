@@ -1,2 +1,2 @@
-URI = 'postgres://wipyxyudythxuj:1e3d96bcfec5dbfcc96b02fe3a9d01304d21076266904351bbb099564492e117@ec2-3-231-82-226.compute-1.amazonaws.com:5432/d78h3fc5ja8ahh'
+URI = 'postgresql://wipyxyudythxuj:1e3d96bcfec5dbfcc96b02fe3a9d01304d21076266904351bbb099564492e117@ec2-3-231-82-226.compute-1.amazonaws.com:5432/d78h3fc5ja8ahh'
 TOKEN = 'OTc3NjIxMzQ1ODE2OTQ0Njgw.G6UE3h.Hi8qxFGnu4Cabs4gmzGO_4ygxxslc-VUEc4Xro'
