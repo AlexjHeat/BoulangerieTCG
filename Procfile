@@ -1,1 +1,1 @@
-worker: py3 boulangerieTCG.py
+worker: python3 boulangerieTCG.py
