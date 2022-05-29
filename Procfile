@@ -1,0 +1,1 @@
+worker: py3 boulangerieTCG.py
